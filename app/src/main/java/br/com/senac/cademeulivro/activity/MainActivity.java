@@ -1,9 +1,11 @@
 package br.com.senac.cademeulivro.activity;
 
 import android.app.Dialog;
+import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
@@ -19,8 +21,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.Toast;
-
-import com.google.zxing.client.android.CaptureActivity;
 
 import java.util.List;
 
@@ -121,10 +121,18 @@ public class MainActivity extends AppCompatActivity {
 
                         }else{
                             //pega isbn via camera
-                            Intent intent = new Intent(getApplicationContext(),CaptureActivity.class);
-                            intent.setAction("com.google.zxing.client.android.SCAN");
-                            intent.putExtra("SAVE_HISTORY", false);
-                            startActivityForResult(intent, Constantes.SCANNER_REQUEST);
+                            try {
+                                //instanciando scanner
+                                Intent intent = new Intent("com.google.zxing.client.android.SCAN");
+                                intent.putExtra("SCAN_MODE", "PRODUCT_MODE");
+                                startActivityForResult(intent, Constantes.SCANNER_REQUEST);
+                            } catch (ActivityNotFoundException e) {
+
+                                Toast.makeText(MainActivity.this, R.string.leitor, Toast.LENGTH_SHORT).show();
+                                Uri uri = Uri.parse("market://search?q=pname:" + "com.google.zxing.client.android");
+                                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                                startActivity(intent);
+                            }
                         }
 
                     }

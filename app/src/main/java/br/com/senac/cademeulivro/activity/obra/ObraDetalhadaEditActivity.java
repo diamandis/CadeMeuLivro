@@ -1,5 +1,6 @@
 package br.com.senac.cademeulivro.activity.obra;
 
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
@@ -18,10 +19,6 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
-
-
-
-import com.google.zxing.client.android.CaptureActivity;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -161,12 +158,18 @@ public class ObraDetalhadaEditActivity extends AppCompatActivity {
 
     public void scannerIsbn (View v){
 
-        //instanciando scanner
-        Intent intent = new Intent(getApplicationContext(),CaptureActivity.class);
-        intent.setAction("com.google.zxing.client.android.SCAN");
-        intent.putExtra("SAVE_HISTORY", false);
-        startActivityForResult(intent, Constantes.SCANNER_REQUEST);
+        try {
+            //instanciando scanner
+            Intent intent = new Intent("com.google.zxing.client.android.SCAN");
+            intent.putExtra("SCAN_MODE", "PRODUCT_MODE");
+            startActivityForResult(intent, Constantes.SCANNER_REQUEST);
+        } catch (ActivityNotFoundException e) {
 
+            Toast.makeText(this, R.string.leitor, Toast.LENGTH_SHORT).show();
+            Uri uri = Uri.parse("market://search?q=pname:" + "com.google.zxing.client.android");
+            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+            startActivity(intent);
+        }
     }
 
     public void concluirEditObra (View v){
@@ -237,8 +240,8 @@ public class ObraDetalhadaEditActivity extends AppCompatActivity {
                     String contents = data.getStringExtra("SCAN_RESULT");
                     editISBN.setText(contents);
                     Toast.makeText(this, "Ação realizada com sucesso!", Toast.LENGTH_SHORT).show();
-
                 } else {
+
                     Toast.makeText(this, "Falha ao realizar esta ação!", Toast.LENGTH_SHORT).show();
                 }
                 break;
