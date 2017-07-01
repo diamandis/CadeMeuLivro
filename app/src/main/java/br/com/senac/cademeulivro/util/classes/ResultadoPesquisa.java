@@ -26,29 +26,28 @@ import br.com.senac.cademeulivro.model.Obra;
 import cz.msebera.android.httpclient.Header;
 
 /**
- * Created by joaos on 22/05/2017.
+ * Created by joaos on 01/07/2017.
  */
 
-public class Scanner {
+public class ResultadoPesquisa {
 
     private List<Obra> obrasEncontradas;
     private Activity activityForToast;
     private Obra obra;
     private Bitmap thumbImg;
-    private String ISBN;
+    private String valorPesquisa;
 
-    public Scanner(Activity activityForToast) {
-
+    public ResultadoPesquisa(Activity activityForToast) {
         this.activityForToast = activityForToast;
     }
 
-    public List<Obra> pesquisar(String isbn){
+    public List<Obra> pesquisar(String valor){
 
-        this.ISBN=isbn;
+        this.valorPesquisa=valor.replace(" ","+");
         obrasEncontradas= new ArrayList<>();
-        String url="https://www.googleapis.com/books/v1/volumes?q=isbn:"+isbn;
 
-        //Requisição HTTP Asyncrona
+        String url="https://www.googleapis.com/books/v1/volumes?q=authors:"+valorPesquisa+"&tittle:"+valorPesquisa;
+
         AsyncHttpClient client = new AsyncHttpClient();
         client.get(url, new AsyncHttpResponseHandler() {
 
@@ -74,8 +73,11 @@ public class Scanner {
                     JSONArray bookArray = resultObject.getJSONArray("items");
                     StringBuilder authorBuild = new StringBuilder("");
 
+                    //pegando até 10 resultados
+                    int max=(bookArray.length()>10) ? 10 : bookArray.length();
+
                     //preenchendo a lista e verificando a existência dos campos
-                    for (int j=0; j<bookArray.length();j++) {
+                    for (int j=0; j<max;j++) {
 
                         obra = new Obra();
 
@@ -87,13 +89,15 @@ public class Scanner {
                         if(!volumeObject.isNull("imageLinks")){
 
                             JSONObject imageInfo = volumeObject.getJSONObject("imageLinks");
-                            new GetBookThumb().execute(imageInfo.getString("smallThumbnail")).get();
+                            new ResultadoPesquisa.GetBookThumb().execute(imageInfo.getString("smallThumbnail")).get();
                         }
 
                         if(!volumeObject.isNull("authors")){
                             JSONArray authorArray = volumeObject.getJSONArray("authors");
+
                             if(authorArray !=null) {
                                 for (int a = 0; a < authorArray.length(); a++) {
+
                                     if (a > 0) authorBuild.append(", ");
                                     authorBuild.append(authorArray.getString(a));
                                 }
@@ -104,7 +108,6 @@ public class Scanner {
                         obra.setTitulo((!volumeObject.isNull("title")) ? volumeObject.getString("title") : null);
                         obra.setEditora((!volumeObject.isNull("publisher") ? volumeObject.getString("publisher") : null));
                         obra.setDescricao(!volumeObject.isNull("description") ? volumeObject.getString("description") : null);
-                        obra.setIsbn(ISBN);
 
                         //capturando a data e pegando apenas o ano
                         if(!volumeObject.isNull("publishedDate")){
@@ -112,7 +115,18 @@ public class Scanner {
                             obra.setAnoPublicacao(Integer.parseInt(parts[0]));
                         }
 
-                        obrasEncontradas.add(obra);
+                        if(!volumeObject.isNull("industryIdentifiers")){
+                            JSONArray isbnArray = volumeObject.getJSONArray("industryIdentifiers");
+
+                            for(int i=0; i<isbnArray.length(); i++){
+
+                                if(isbnArray.getJSONObject(i).getString("type").equalsIgnoreCase("ISBN_13")){
+                                    obra.setIsbn(isbnArray.getJSONObject(i).getString("identifier"));
+                                }
+                            }
+                        }
+
+                    obrasEncontradas.add(obra);
                     }
 
                 } catch (JSONException e ) {
@@ -137,9 +151,10 @@ public class Scanner {
                 super.onRetry(retryNo);
             }
         });
+
         return obrasEncontradas;
     }
-
+    //Requisição HTTP Asyncrona
 
 
     private class GetBookThumb extends AsyncTask<String, Void, String> {

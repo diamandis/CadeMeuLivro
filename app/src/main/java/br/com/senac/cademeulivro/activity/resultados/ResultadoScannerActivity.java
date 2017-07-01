@@ -32,9 +32,7 @@ public class ResultadoScannerActivity extends AppCompatActivity {
         listView= (ListView) findViewById(R.id.listaScanner);
 
         Bundle parametros=getIntent().getExtras();
-
         Scanner scanner=new Scanner(this);
-
 
         lista=scanner.pesquisar(parametros.getString("isbn"));
 

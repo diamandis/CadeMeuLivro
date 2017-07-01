@@ -1,7 +1,9 @@
 package br.com.senac.cademeulivro.activity;
 
 import android.app.Dialog;
+import android.app.SearchManager;
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -15,6 +17,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -28,6 +31,7 @@ import br.com.senac.cademeulivro.R;
 import br.com.senac.cademeulivro.activity.container.ContainerEditActivity;
 import br.com.senac.cademeulivro.activity.container.ContainerListFragment;
 import br.com.senac.cademeulivro.activity.obra.ObraDetalhadaEditActivity;
+import br.com.senac.cademeulivro.activity.resultados.ResultadoPesquisaActivity;
 import br.com.senac.cademeulivro.activity.resultados.ResultadoScannerActivity;
 import br.com.senac.cademeulivro.activity.tabs.tab_ObrasActivity;
 import br.com.senac.cademeulivro.activity.tabs.tab_RecomendadosActivity;
@@ -134,7 +138,6 @@ public class MainActivity extends AppCompatActivity {
                                 startActivity(intent);
                             }
                         }
-
                     }
                 });
                 builder.show();
@@ -156,6 +159,33 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
+
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        SearchView searchView = (SearchView) menu.findItem(R.id.action_search)
+                .getActionView();
+        if (searchView != null ) {
+            /*searchView.setSearchableInfo(searchManager
+                    .getSearchableInfo(getComponentName()));
+            searchView.setIconifiedByDefault(false);*/
+        }
+
+        SearchView.OnQueryTextListener queryTextListener = new SearchView.OnQueryTextListener() {
+            public boolean onQueryTextChange(String newText) {
+                // this is your adapter that will be filtered
+                return true;
+            }
+
+            public boolean onQueryTextSubmit(String query) {
+
+                Intent intent=new Intent(MainActivity.this, ResultadoPesquisaActivity.class);
+                intent.putExtra("data",query);
+                startActivity(intent);
+
+                return true;
+            }
+        };
+        searchView.setOnQueryTextListener(queryTextListener);
+
         return true;
     }
 
@@ -182,14 +212,9 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
 
-
                 break;
             case R.id.action_logout:
 
-                break;
-            case R.id.action_search:
-
-                //...
                 break;
         }
 
@@ -220,7 +245,6 @@ public class MainActivity extends AppCompatActivity {
                 case 3:
                     tab_RecomendadosActivity tabRecomendados=new tab_RecomendadosActivity();
                     return tabRecomendados;
-
                 default:
                     return null;
             }
@@ -259,11 +283,7 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent=new Intent(this, ResultadoScannerActivity.class);
                 intent.putExtra("isbn",contents);
                 startActivity(intent);
-                /*
-                Intent intent=new Intent(this,ResultadoScannerActivity.class);
-                intent.putExtra("lista",(ArrayList<Obra>)lista);
-                startActivity(intent);
-                */
+
             } else {
                 Toast.makeText(this, getString(R.string.falha_leitura), Toast.LENGTH_SHORT).show();
             }

@@ -35,6 +35,27 @@ public class ObraDAO {
         return getObra(cursor);
     }
 
+    public List<Obra> getByName(String valor) {
+
+
+        String query = "select * from Obra where autor like '%"+valor+"%' or titulo like '%"+valor+"%'";
+        Cursor cursor = mDatabaseHelper.rawQuery(query, null);
+
+        List<Obra> lista=new ArrayList<>();
+
+        try {
+            cursor.moveToFirst();
+            while(!cursor.isAfterLast()) {
+                lista.add(getObra(cursor));
+                cursor.moveToNext();
+            }
+        } finally {
+            cursor.close();
+        }
+
+        return lista;
+    }
+
     public List<Obra> getListaObras() {
         Cursor cursor = mDatabaseHelper.query("Obra",null, null, null, null, null, null);
         List<Obra> lista = new ArrayList<>();

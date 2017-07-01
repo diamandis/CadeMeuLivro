@@ -61,9 +61,10 @@ public class AdapterListViewObra extends BaseAdapter {
         TextView editora=(TextView) view.findViewById(R.id.TextViewEditoraLista);
         ImageView capa=(ImageView) view.findViewById(R.id.ImageViewCapaLista);
 
-        titulo.setText(item.getTitulo());
-        autor.setText(item.getAutor());
-        editora.setText(item.getEditora());
+
+        titulo.setText((item.getTitulo()!=null && item.getTitulo().length()>20) ? item.getTitulo().substring(0,20)+"..." : item.getTitulo());
+        autor.setText((item.getAutor()!=null && item.getAutor().length()>20) ? item.getAutor().substring(0,20)+"..." : item.getAutor());
+        editora.setText((item.getEditora()!=null && item.getEditora().length()>20) ? item.getEditora().substring(0,20)+"..." : item.getEditora());
         capa.setImageBitmap(item.getCapa());
 
         return view;

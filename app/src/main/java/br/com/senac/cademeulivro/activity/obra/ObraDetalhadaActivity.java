@@ -75,12 +75,12 @@ public class ObraDetalhadaActivity extends AppCompatActivity {
 
     public void preencheCampos(Obra obra){
 
-        tvTitulo.setText(obra.getTitulo());
-        tvEditora.setText(obra.getEditora());
+        tvTitulo.setText((obra.getTitulo()!=null && obra.getTitulo().length()>30) ? obra.getTitulo().substring(0,30)+"..." : obra.getTitulo());
+        tvEditora.setText((obra.getEditora()!=null && obra.getEditora().length()>30) ? obra.getEditora().substring(0,30)+"..." : obra.getEditora());
         tvIsbn.setText(obra.getIsbn());
-        tvDescricao.setText(obra.getDescricao());
+        tvDescricao.setText((obra.getDescricao()!=null && obra.getDescricao().length()>150) ? obra.getDescricao().substring(0,150)+"..." : obra.getDescricao());
         tvAno.setText(String.valueOf(obra.getAnoPublicacao()));
-        tvAutor.setText(obra.getAutor());
+        tvAutor.setText((obra.getAutor()!=null && obra.getAutor().length()>30) ? obra.getAutor().substring(0,30)+"..." : obra.getAutor());
         emprestado.setChecked(obra.isEmprestado());
         //capa.setImageBitmap(obra.getCapa());
     }

@@ -11,31 +11,63 @@
     android:orientation="vertical"
     tools:context="br.com.senac.cademeulivro.activity.resultados.ResultadoPesquisaActivity">
 
-    <TextView
-        style="@style/textView_custom"
-        android:text="@string/resultados_enc_acervo"
-        android:textStyle="bold"
+    <LinearLayout
+        android:onClick="expandirInterno"
+        android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:layout_height="wrap_content">
+
+        <TextView
+            style="@style/textView_custom"
+            android:text="@string/resultados_enc_acervo"
+            android:textStyle="bold"
+            android:gravity="left|center"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="4"
+            android:id="@+id/textView" />
+
+        <ImageView
+            android:src="@mipmap/ic_expandable"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
 
     <ListView
+        android:visibility="gone"
         android:id="@+id/listaResultAcervo"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="5"
         ></ListView>
 
-
-    <TextView
-        style="@style/textView_custom"
-        android:text="@string/resultados_externos"
-        android:textStyle="bold"
+    <LinearLayout
+        android:onClick="expandirExterno"
+        android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:layout_height="wrap_content">
+
+        <TextView
+            style="@style/textView_custom"
+            android:text="@string/resultados_externos"
+            android:textStyle="bold"
+            android:gravity="left|center"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="4" />
+
+        <ImageView
+            android:src="@mipmap/ic_expandable"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
 
     <ListView
+        android:visibility="gone"
         android:id="@+id/listaResultGoogle"
         android:layout_width="match_parent"
         android:layout_height="0dp"

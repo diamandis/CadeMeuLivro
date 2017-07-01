@@ -58,7 +58,7 @@ public class AdapterListViewTag extends BaseAdapter {
         TextView usos= (TextView) view.findViewById(R.id.textViewUsoTag);
         LinearLayout layoutTags= (LinearLayout) view.findViewById(R.id.layoutTags);
 
-        nome.setText(item.getNomeTag());
+        nome.setText((item.getNomeTag()!=null && item.getNomeTag().length()>20) ? item.getNomeTag().substring(0,20)+"..." : item.getNomeTag());
         usos.setText(String.valueOf(item.getTotalUsos()));
         layoutTags.setBackgroundColor(Color.parseColor(item.getCorHex()));
 
