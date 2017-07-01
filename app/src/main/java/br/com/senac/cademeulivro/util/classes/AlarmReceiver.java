@@ -8,6 +8,7 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.os.SystemClock;
@@ -43,6 +44,21 @@ public class AlarmReceiver extends BroadcastReceiver {
         containerDAO = new ContainerDAO(mDatabase);
         container = containerDAO.getById(idNotificacao);
 
+        //verifica se o usuário quer receber notificação
+        String PREF_NAME = "MyPrefsFile";
+        SharedPreferences settingsShared = context.getSharedPreferences(PREF_NAME, 0);
+
+        //se estiver como false, ele cancela todas as notificações
+        if(settingsShared.getBoolean("receberNotificacao", false)==false){
+            PendingIntent pendingIntent=PendingIntent.getBroadcast(context,
+                    Constantes.BROADCAST_NOTIFICAR,
+                    intent,
+                    PendingIntent.FLAG_CANCEL_CURRENT);
+
+            alarm.cancel(pendingIntent);
+        }
+
+        //verifica se tem obra dentro do container
         if(container.getTotalObras()>0){
 
             Notification notif = intent.getParcelableExtra(NOTIFICATION);

@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -83,14 +84,14 @@ public class MainActivity extends AppCompatActivity {
                 });
 
 
-        final String PREFS_NAME = "MyPrefsFile";
+        String PREFS_NAME = "MyPrefsFile";
 
 
         //primeira vez que o app é aberto
         SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
 
         if (settings.getBoolean("my_first_time", true)) {
-
+            Boolean status = settings.edit().putBoolean("receberNotificacao", true).commit();
             //inicar activity de instruções
             //primeiroAcesso();
             // record the fact that the app has been started at least once
@@ -197,18 +198,33 @@ public class MainActivity extends AppCompatActivity {
 
             case R.id.action_settings:
 
+                String PREF_NAME = "MyPrefsFile";
+                SharedPreferences settingsShared = getSharedPreferences(PREF_NAME, 0);
+
                 Dialog dialog= new Dialog(MainActivity.this);
                 dialog.setTitle(getString(R.string.configuracoes));
                 dialog.setContentView(R.layout.h_custom_dialog);
-                dialog.show();
 
                 final CheckBox notificacoes= (CheckBox) dialog.findViewById(R.id.checkboxNotificacoes);
 
+                if(settingsShared.getBoolean("receberNotificacao", false)==true){
+                    notificacoes.setChecked(true);
+                }
+
+                dialog.show();
                 dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
                 @Override
                 public void onDismiss(final DialogInterface d) {
 
-                        //notificacoes.isChecked()
+                    String PREFS_NAME = "MyPrefsFile";
+                    SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+
+                    if(settings.getBoolean("receberNotificacao", false)==true && notificacoes.isChecked()==false) {
+                        settings.edit().putBoolean("receberNotificacao", false).commit();
+                    }else if(settings.getBoolean("receberNotificacao", false)==false && notificacoes.isChecked()==true){
+                        settings.edit().putBoolean("receberNotificacao", true).commit();
+                    }
+
                     }
                 });
 
