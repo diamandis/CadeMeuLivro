@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -26,8 +25,6 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.Toast;
 
-import java.util.List;
-
 import br.com.senac.cademeulivro.R;
 import br.com.senac.cademeulivro.activity.container.CadastroPagerActivity;
 import br.com.senac.cademeulivro.activity.container.ContainerEditActivity;
@@ -39,17 +36,12 @@ import br.com.senac.cademeulivro.activity.tabs.tab_ObrasActivity;
 import br.com.senac.cademeulivro.activity.tabs.tab_RecomendadosActivity;
 import br.com.senac.cademeulivro.activity.tabs.tab_TagsActivity;
 import br.com.senac.cademeulivro.activity.tag.TagEditActivity;
-import br.com.senac.cademeulivro.model.Obra;
-import br.com.senac.cademeulivro.util.classes.Scanner;
 import br.com.senac.cademeulivro.util.constante.Constantes;
 
 public class MainActivity extends AppCompatActivity {
 
-
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private FloatingActionButton fab;
-    private Scanner scanner;
-    private List<Obra> lista;
     private int tabPosicao=0;
 
     private ViewPager mViewPager;

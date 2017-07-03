@@ -28,6 +28,7 @@ import br.com.senac.cademeulivro.util.classes.AlarmReceiver;
 import br.com.senac.cademeulivro.util.classes.GerenciadorDeNotificacoes;
 
 public class CadastroPagerActivity extends AppCompatActivity {
+
     private ViewPager mViewPager;
     private List<ContainerTipos> mContainerTiposList;
     private SQLiteDatabase mDatabase;

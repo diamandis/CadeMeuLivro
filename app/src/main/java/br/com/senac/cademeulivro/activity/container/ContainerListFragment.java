@@ -28,8 +28,6 @@ public class ContainerListFragment extends Fragment {
     private ContainerDAO containerDAO;
     private ContainerAdapter mAdapter;
     private SQLiteDatabase mDatabase;
-    //private FloatingActionButton fbMain;
-    //private Animation FabOpen,FabClose;
     //private boolean isOpen=false;
 
     @Override
@@ -40,7 +38,6 @@ public class ContainerListFragment extends Fragment {
         containerDAO = new ContainerDAO(mDatabase);
         mRecyclerView = (RecyclerView) v.findViewById(R.id.container_recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        primeiroAcesso();
         refresh();
 
         return v;
@@ -169,25 +166,6 @@ public class ContainerListFragment extends Fragment {
             mAdapter.notifyDataSetChanged();
         }
 
-    }
-
-    private void primeiroAcesso() {
-        List<Container> itens = containerDAO.getAll();
-        if(itens.isEmpty()) {
-            AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
-            alert.setIcon(R.drawable.container_estante_icon);
-            alert.setTitle(R.string.bem_vindo);
-            alert.setMessage(R.string.primeiro_acesso);
-            //alert.setView(R.layout.dialog_bem_vindo);
-            alert.setPositiveButton(R.string.seguinte, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    startActivity(new Intent(getActivity(), CadastroPagerActivity.class));
-
-                }
-            });
-            alert.show();
-        }
     }
 }
 

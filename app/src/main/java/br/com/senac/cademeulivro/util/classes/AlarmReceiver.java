@@ -33,23 +33,25 @@ public class AlarmReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         int acao = intent.getExtras().getInt("action");
 
+        mDatabase = new DatabaseHelper(context.getApplicationContext()).getWritableDatabase();
+        containerDAO = new ContainerDAO(mDatabase);
+
         if (intent.getExtras().getInt("id") != 0) {
             idNotificacao = intent.getExtras().getInt("id");
+            container = containerDAO.getById(idNotificacao);
         }
 
         NotificationManager notifManager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
         alarm = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
-        mDatabase = new DatabaseHelper(context.getApplicationContext()).getWritableDatabase();
-        containerDAO = new ContainerDAO(mDatabase);
-        container = containerDAO.getById(idNotificacao);
+
 
         //verifica se o usuário quer receber notificação
         String PREF_NAME = "MyPrefsFile";
         SharedPreferences settingsShared = context.getSharedPreferences(PREF_NAME, 0);
 
         //se estiver como false, ele cancela todas as notificações
-        if(settingsShared.getBoolean("receberNotificacao", false)==false){
+        if(settingsShared.getBoolean("receberNotificacao", false)==false || container==null){
             PendingIntent pendingIntent=PendingIntent.getBroadcast(context,
                     Constantes.BROADCAST_NOTIFICAR,
                     intent,

@@ -10,24 +10,38 @@
     tools:context="br.com.senac.cademeulivro.activity.container.ContainerEditActivity">
 
     <LinearLayout
-        android:layout_weight="4"
+        android:layout_weight="5"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:orientation="horizontal"
         >
 
         <ImageView
-            android:id="@+id/imageViewContEdit"
-            android:layout_weight="5"
-            android:layout_height="match_parent"
             android:layout_width="0dp"
-            />
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@mipmap/ic_left_arrow"
+            android:layout_gravity="center_vertical" />
+
+        <android.support.v4.view.ViewPager
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/cadastro_pager"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="7" />
+
+        <ImageView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@mipmap/ic_right_arrow"
+            android:layout_gravity="center_vertical" />
 
     </LinearLayout>
 
     <LinearLayout
         android:orientation="vertical"
-        android:layout_weight="5"
+        android:layout_weight="4"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginLeft="16dp"
@@ -108,6 +122,16 @@
                     />
 
             </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/ultimaModificacao"
+                android:textSize="18dp"
+                android:layout_marginTop="8dp"
+                android:layout_alignParentRight="true"
+                android:layout_below="@id/editLocalContainer"
+                />
 
     </LinearLayout>
 

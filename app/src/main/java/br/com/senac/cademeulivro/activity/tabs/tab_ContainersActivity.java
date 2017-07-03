@@ -85,7 +85,6 @@ public class tab_ContainersActivity extends Fragment {
         };
     }
 
-
     public AdapterView.OnItemLongClickListener cliqueLongo() {
 
         return new AdapterView.OnItemLongClickListener() {
@@ -124,7 +123,5 @@ public class tab_ContainersActivity extends Fragment {
             }
 
         };
-
     }
-
 }
