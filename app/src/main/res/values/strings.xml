@@ -7,7 +7,6 @@
     <string name="ultimaLimpeza">Última Limpeza: </string>
     <string name="icone">Ícone: </string>
 
-
     <string name="falha_leitura">Falha ao ler o código!</string>
     <string name="receber_notificacao">Receber notificações</string>
     <string name="buttonExcluir">Excluir</string>
@@ -59,4 +58,6 @@
     <string name="adicionar_container">Adicionar Container</string>
     <string name="ok">Ok</string>
     <string name="sem_obras">Nenhuma obra utiliza esta tag!</string>
+
+    <string name="facebook_app_id">188132491696991</string>
 </resources>
