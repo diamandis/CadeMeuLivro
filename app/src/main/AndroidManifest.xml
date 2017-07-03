@@ -24,10 +24,9 @@
         <activity android:name=".activity.tag.TagEditActivity" />
         <activity android:name=".activity.resultados.ResultadoPesquisaActivity" />
         <activity android:name=".activity.resultados.ResultadoScannerActivity" />
+        <activity android:name=".activity.tag.ObrasComATagActivity"/>
 
         <receiver android:name=".util.classes.AlarmReceiver" />
-
-        <activity android:name=".activity.tag.ObrasComATagActivity"></activity>
     </application>
 
 </manifest>
