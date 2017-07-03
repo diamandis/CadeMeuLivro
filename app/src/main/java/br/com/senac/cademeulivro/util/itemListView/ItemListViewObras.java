@@ -19,7 +19,6 @@ public class ItemListViewObras {
         this.titulo = titulo;
         this.autor = autor;
         this.capa = capa;
-        //this.edicao= edicao;
     }
 
     public int getEdicao() {

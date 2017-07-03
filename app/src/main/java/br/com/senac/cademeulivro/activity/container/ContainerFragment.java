@@ -11,7 +11,6 @@ import android.widget.TextView;
 import br.com.senac.cademeulivro.R;
 import br.com.senac.cademeulivro.model.ContainerTipos;
 
-
 /**
  * Created by Didi on 5/23/2017.
  */

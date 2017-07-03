@@ -21,6 +21,7 @@ import br.com.senac.cademeulivro.R;
 import br.com.senac.cademeulivro.activity.obra.ObraDetalhadaActivity;
 import br.com.senac.cademeulivro.activity.obra.ObraDetalhadaEditActivity;
 import br.com.senac.cademeulivro.dao.ObraDAO;
+import br.com.senac.cademeulivro.dao.ObraTagDAO;
 import br.com.senac.cademeulivro.helpers.DatabaseHelper;
 import br.com.senac.cademeulivro.model.Obra;
 import br.com.senac.cademeulivro.util.adapter.AdapterListViewObra;
@@ -30,6 +31,7 @@ public class tab_ObrasActivity extends Fragment {
 
     private ListView listView;
     private ObraDAO obraDao;
+    private ObraTagDAO obraTagDAO;
     private SQLiteDatabase mDatabase;
     private AdapterListViewObra adapterListView;
     private List<Obra> itens;
@@ -43,6 +45,7 @@ public class tab_ObrasActivity extends Fragment {
         View rootView = inflater.inflate(R.layout.b_tab_activity_obras, container, false);
         mDatabase = DatabaseHelper.newInstance(getActivity());
         obraDao = new ObraDAO(mDatabase);
+        obraTagDAO = new ObraTagDAO(mDatabase);
         listView = (ListView) rootView.findViewById(R.id.listaObras);
         createListView();
 
@@ -57,7 +60,7 @@ public class tab_ObrasActivity extends Fragment {
     public void createListView() {
 
         itens = obraDao.getListaObras();
-
+        //Obra obra=obraDao.getById(1);
         adapterListView = new AdapterListViewObra(getActivity(), itens);
         listView.setAdapter(adapterListView);
     }
@@ -105,7 +108,9 @@ public class tab_ObrasActivity extends Fragment {
                             startActivity(intent);
 
                         } else {
+                            obraTagDAO.deleteObraFromAll(obra.getIdObra());
                             obraDao.delete(obra.getIdObra());
+
                             //TODO fazer refresh
                             Toast.makeText(getContext(), "Excluído com sucesso", Toast.LENGTH_SHORT).show();
                         }

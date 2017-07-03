@@ -10,18 +10,20 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import br.com.senac.cademeulivro.R;
+import br.com.senac.cademeulivro.model.Container;
 import br.com.senac.cademeulivro.util.DatePickerFragment;
 
 
 public class ContainerEditActivity extends AppCompatActivity {
 
     private ImageView imgCont;
-    //private final int[]  imagens={R.drawable.container_armario_icon,R.drawable.caixa_icon,R.drawable.estante_icon,R.drawable.prateleiras_icon};
+    private final int[]  imagens={R.drawable.container_armario_icon,R.drawable.container_caixa_icon,R.drawable.container_estante_icon,R.drawable.container_prateleiras_icon};
     private final String[] iconesNomes={"Armário","Caixa","Estante","Prateleiras"};
     private EditText editNome,editLocal;
     private TextView tvIcone;
     private ImageButton imgBUltLimp;
     private int posicao=1;
+    private Container container;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,18 +32,18 @@ public class ContainerEditActivity extends AppCompatActivity {
 
         editNome= (EditText) findViewById(R.id.editNomeCont);
         editLocal= (EditText) findViewById(R.id.editLocalCont);
-        imgBUltLimp= (ImageButton) findViewById(R.id.imgBUltimaLimpCont);
         tvIcone= (TextView) findViewById(R.id.textIconeContEdit);
         imgCont= (ImageView) findViewById(R.id.imageViewContEdit);
 
 
-        //temporario
         Bundle params=getIntent().getExtras();
+
         if(params!=null) {
-            posicao = params.getInt("posicaoImagem");
+            container= (Container) params.getSerializable("container");
+            preencheCampos(container);
         }
 
-        //imgCont.setImageResource(imagens[posicao]);
+        imgCont.setImageResource(imagens[posicao]);
         tvIcone.setText(iconesNomes[posicao]);
 
     }
@@ -70,9 +72,11 @@ public class ContainerEditActivity extends AppCompatActivity {
         finish();
     }
 
+    public void preencheCampos(Container container){
 
-
-
-
+        editNome.setText(container.getNomeContainer());
+        editLocal.setText(container.getLocalContainer());
+        tvIcone.setText(container.getContainerTipos().getTipoIcone());
+    }
 
 }

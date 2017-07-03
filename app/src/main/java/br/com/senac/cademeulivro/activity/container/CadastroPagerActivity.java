@@ -1,5 +1,6 @@
 package br.com.senac.cademeulivro.activity.container;
 
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -23,6 +24,8 @@ import br.com.senac.cademeulivro.dao.ContainerTiposDAO;
 import br.com.senac.cademeulivro.helpers.DatabaseHelper;
 import br.com.senac.cademeulivro.model.Container;
 import br.com.senac.cademeulivro.model.ContainerTipos;
+import br.com.senac.cademeulivro.util.classes.AlarmReceiver;
+import br.com.senac.cademeulivro.util.classes.GerenciadorDeNotificacoes;
 
 public class CadastroPagerActivity extends AppCompatActivity {
     private ViewPager mViewPager;
@@ -31,6 +34,7 @@ public class CadastroPagerActivity extends AppCompatActivity {
     private EditText localContainer, nomeContainer;
     private TextView ultimaModificacao;
     private ContainerTipos tipo;
+    private Integer id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +42,8 @@ public class CadastroPagerActivity extends AppCompatActivity {
         setContentView(R.layout.g_activity_cadastro_pager);
 
         mViewPager = (ViewPager) findViewById(R.id.cadastro_pager);
+
+
         mDatabase = DatabaseHelper.newInstance(this);
         ContainerTiposDAO dao = new ContainerTiposDAO(mDatabase);
         mContainerTiposList = dao.getContainersDefault();
@@ -58,10 +64,21 @@ public class CadastroPagerActivity extends AppCompatActivity {
 
         localContainer = (EditText) findViewById(R.id.editLocalContainer);
         nomeContainer = (EditText) findViewById(R.id.editNomeContainer);
-        ultimaModificacao = (TextView) findViewById(R.id.ultimaModificacao);
+        //ultimaModificacao = (TextView) findViewById(R.id.ultimaModificacao);
 
         DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
         ultimaModificacao.setText(getString(R.string.ultima_modif_container, df.format(new Date())));
+
+        id = (Integer) getIntent().getSerializableExtra("container_id");
+        if(id !=null && id > 0) {
+            ContainerDAO daoContainer = new ContainerDAO(mDatabase);
+            Container c = daoContainer.getById(getIntent().getIntExtra("container_id",0));
+            mViewPager.setCurrentItem(c.getContainerTipos().get_id()-1 );
+            localContainer.setText(c.getLocalContainer());
+            ultimaModificacao.setText(df.format(c.getUltimaModificacao()));
+            nomeContainer.setText(c.getNomeContainer());
+        }
+
     }
 
     public void containerCancelar(View v) {
@@ -76,8 +93,20 @@ public class CadastroPagerActivity extends AppCompatActivity {
         novoContainer.setIdBiblioteca(1); //user teste
         novoContainer.setContainerTipos(new ContainerTipos(mViewPager.getCurrentItem()+1)); //pager conta a partir do 0
         ContainerDAO containerDAO = new ContainerDAO(mDatabase);
-        long result = containerDAO.insert(novoContainer);
+        long result = 0;
+        if(id !=null) {
+            novoContainer.setIdContainer(id);
+            result = containerDAO.update(novoContainer);
+        } else {
+            result = containerDAO.insert(novoContainer);
+        }
         if(result > 0) {
+
+            //criando notification
+            GerenciadorDeNotificacoes notificacoes= new GerenciadorDeNotificacoes(CadastroPagerActivity.this,
+                    new Intent(CadastroPagerActivity.this, AlarmReceiver.class), novoContainer.getNomeContainer());
+
+            notificacoes.criarNotification((int) result);
             finish();
         } else {
             Toast.makeText(this,"Erro", Toast.LENGTH_SHORT).show();

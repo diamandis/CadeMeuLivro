@@ -5,168 +5,126 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
+import android.support.v7.widget.PopupMenu;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageSwitcher;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
 
-
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import br.com.senac.cademeulivro.R;
 import br.com.senac.cademeulivro.activity.container.ContainerEditActivity;
+import br.com.senac.cademeulivro.dao.ContainerDAO;
 import br.com.senac.cademeulivro.dao.ContainerTiposDAO;
 import br.com.senac.cademeulivro.helpers.DatabaseHelper;
+import br.com.senac.cademeulivro.model.Container;
+import br.com.senac.cademeulivro.util.adapter.AdapterListViewContainer;
+import br.com.senac.cademeulivro.util.adapter.AdapterListViewContainerDialog;
+import br.com.senac.cademeulivro.util.constante.Constantes;
 
 /**
  * Created by joaos on 22/04/2017.
  */
 
 
-public class tab_ContainersActivity extends Fragment implements View.OnClickListener {
+public class tab_ContainersActivity extends Fragment {
 
-    private ImageSwitcher ImgSw;
-    private Map<String,String> containersDefault;
-    private int posicao=1;
-    private TextView tvIcone;
-    private ImageButton direita,esquerda;
-    private Button editar,excluir;
+    private ContainerDAO containerDAO;
     private SQLiteDatabase mDatabase;
-    //private FloatingActionButton fbMain;
-    //private Animation FabOpen,FabClose;
-    //private boolean isOpen=false;
+    private ListView listContainerTab;
+    private List<Container> itens;
+    private AdapterListViewContainer adapter;
+    private Container container;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.b_tab_activity_containers, container, false);
 
+        listContainerTab= (ListView) rootView.findViewById(R.id.listContainerTab);
         mDatabase = DatabaseHelper.newInstance(getActivity());
-        ContainerTiposDAO containerDAO = new ContainerTiposDAO(mDatabase);
-        Set<String> keys = containersDefault.keySet();
+        containerDAO = new ContainerDAO(mDatabase);
 
-        ImgSw= (ImageSwitcher)rootView.findViewById(R.id.imageSwitcherCont);
-        tvIcone=(TextView)rootView.findViewById(R.id.TextViewIconeCont);
-        direita= (ImageButton) rootView.findViewById(R.id.buttonRight);
-        esquerda= (ImageButton) rootView.findViewById(R.id.buttonLeft);
-        editar= (Button) rootView.findViewById(R.id.buttonEditar);
-        excluir= (Button) rootView.findViewById(R.id.ButtonExcluir);
-
-        excluir.setOnClickListener(this);
-        editar.setOnClickListener(this);
-        direita.setOnClickListener(this);
-        esquerda.setOnClickListener(this);
-
-
-        //controle de containers, centralizando a imagem e setando funcao dos botoes
-        ImgSw.setFactory(new ViewSwitcher.ViewFactory() {
-            public View makeView() {
-
-                ImageView myView = new ImageView(rootView.getContext());
-                myView.setScaleType(ImageView.ScaleType.FIT_CENTER);
-                myView.setLayoutParams(new
-                        ImageSwitcher.LayoutParams(ActionBar.LayoutParams.WRAP_CONTENT,
-                        ActionBar.LayoutParams.WRAP_CONTENT));
-
-                return myView;
-            }
-        });
-        for(String valores : keys) {
-            //ImgSw.setImageResource(imagens[posicao]);
-            //tvIcone.setText(iconesNomes[posicao]);
-        }
-
-/*
-        capturando o FAB e enviando sua animacao quando clicado
-        fbMain= (FloatingActionButton) rootView.findViewById(R.id.fbMainContainer);
-        FabOpen= AnimationUtils.loadAnimation(rootView.getContext(),R.anim.fab_open);
-        FabClose= AnimationUtils.loadAnimation(rootView.getContext(),R.anim.fab_close);
-*/
+        listContainerTab.setOnItemClickListener(cliqueCurto());
+        listContainerTab.setOnItemLongClickListener(cliqueLongo());
 
         return rootView;
     }
 
+    public void createListView(){
 
-    //setar os textviews segundo a imagem do container
-
-    public void passaImagemDireita(View v){
-
-        if(posicao!=3) {
-            posicao++;
-        }else{
-            posicao=0;
-        }
-
-        //ImgSw.setImageResource(imagens[posicao]);
-
+        itens = containerDAO.getAll();
+        adapter = new AdapterListViewContainer(getActivity(), itens);
+        listContainerTab.setAdapter(adapter);
     }
 
-    public void passaImagemEsquerda(View v){
+    public AdapterView.OnItemClickListener cliqueCurto() {
 
-        if(posicao!=0) {
-            posicao--;
-        }else{
-            posicao=3;
-        }
+        return new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
 
-        //ImgSw.setImageResource(imagens[posicao]);
-
+                container = (Container)adapter.getItem(position);
+                Intent intent=new Intent(getContext(), ContainerEditActivity.class);
+                intent.putExtra("container",container);
+                startActivity(intent);
+            }
+        };
     }
 
 
-    public void containerEditar(View v){
+    public AdapterView.OnItemLongClickListener cliqueLongo() {
 
-        Intent intent=new Intent(getActivity(),ContainerEditActivity.class);
+        return new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(final AdapterView<?> adapterView, View view, final int position, long l) {
 
-        intent.putExtra("posicaoImagem",posicao);
+                PopupMenu popup = new PopupMenu(getContext(), view);
+                popup.getMenuInflater().inflate(R.menu.menu_popup, popup.getMenu());
 
-        startActivityForResult(intent,1);
-    }
+                container = (Container)adapter.getItem(position);
 
-    public void containerExcluir(View v){
+                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    public boolean onMenuItemClick(MenuItem item) {
 
+                        int idItem= item.getItemId();
 
+                        if (idItem==R.id.popupEditar) {
 
-    }
-    /*
-        public void novoContainer(View v) {
+                            Intent intent=new Intent(getContext(), ContainerEditActivity.class);
+                            intent.putExtra("container",container);
+                            startActivityForResult(intent, Constantes.REFRESH_REQUEST);
 
-            fbMain.startAnimation(FabOpen);
+                        } else {
+                            //containerDAO.delete
+                            //cancelar notificacoes
 
-            Intent intent=new Intent(getActivity(),ContainerEditActivity.class);
-            startActivity(intent);
+                            //TODO fazer refresh
+                            Toast.makeText(getContext(), "Excluído com sucesso", Toast.LENGTH_SHORT).show();
+                        }
+                        return true;
+                    }
+                });
+                popup.show();
 
-            //chamar tela container edit
+                return true;
+            }
 
-        }
-    */
-    @Override
-    public void onClick(View v) {
-
-        switch (v.getId()) {
-            case R.id.buttonLeft:
-                passaImagemEsquerda(v);
-                break;
-            case R.id.buttonRight:
-                passaImagemDireita(v);
-                break;
-
-            case R.id.buttonEditar:
-                containerEditar(v);
-                break;
-
-            case R.id.ButtonExcluir:
-                containerExcluir(v);
-                break;
-        }
-
+        };
 
     }
+
 }

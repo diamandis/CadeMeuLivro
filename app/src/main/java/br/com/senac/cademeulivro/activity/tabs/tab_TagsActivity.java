@@ -16,7 +16,9 @@ import android.widget.Toast;
 import java.util.List;
 
 import br.com.senac.cademeulivro.R;
+import br.com.senac.cademeulivro.activity.tag.ObrasComATagActivity;
 import br.com.senac.cademeulivro.activity.tag.TagEditActivity;
+import br.com.senac.cademeulivro.dao.ObraTagDAO;
 import br.com.senac.cademeulivro.dao.TagDAO;
 import br.com.senac.cademeulivro.helpers.DatabaseHelper;
 import br.com.senac.cademeulivro.model.Tag;
@@ -29,6 +31,7 @@ public class tab_TagsActivity extends Fragment {
     private ListView listView;
     private AdapterListViewTag adapterListViewTags;
     private TagDAO tagDAO;
+    private ObraTagDAO obraTagDAO;
     private SQLiteDatabase mDatabase;
     private List<Tag> itens;
     private Tag tag;
@@ -40,11 +43,13 @@ public class tab_TagsActivity extends Fragment {
         View rootView = inflater.inflate(R.layout.b_tab_activity_tags, container, false);
         mDatabase = DatabaseHelper.newInstance(getActivity());
         tagDAO= new TagDAO(mDatabase);
+        obraTagDAO = new ObraTagDAO(mDatabase);
         listView = (ListView) rootView.findViewById(R.id.listaTags);
 
         createListView();
 
         listView.setOnItemLongClickListener(cliqueLongo());
+        listView.setOnItemClickListener(cliqueCurto());
 
         return rootView;
     }
@@ -52,10 +57,24 @@ public class tab_TagsActivity extends Fragment {
     public void createListView(){
 
         itens = tagDAO.getListaTags();
-
         adapterListViewTags = new AdapterListViewTag(getActivity(), itens);
         listView.setAdapter(adapterListViewTags);
     }
+
+    public AdapterView.OnItemClickListener cliqueCurto() {
+
+        return new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+
+                tag = (Tag)adapterListViewTags.getItem(position);
+                Intent intent=new Intent(getContext(), ObrasComATagActivity.class);
+                intent.putExtra("idTag",tag.getIdTag());
+                startActivity(intent);
+            }
+        };
+    }
+
 
     public AdapterView.OnItemLongClickListener cliqueLongo() {
 
@@ -80,7 +99,10 @@ public class tab_TagsActivity extends Fragment {
                             startActivityForResult(intent, Constantes.REFRESH_REQUEST);
 
                         } else {
+                            obraTagDAO.deleteTagFromAll(tag.getIdTag());
                             tagDAO.delete(tag.getIdTag());
+
+                            //obraTagDAO.delete()
                             //itens = tagDAO.getListaTags();
                             //adapterListViewTags.notifyDataSetChanged();
                             //adapterListViewTags = new AdapterListViewTag(getActivity(), itens);

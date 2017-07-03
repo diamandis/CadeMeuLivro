@@ -1,6 +1,7 @@
 package br.com.senac.cademeulivro.util.adapter;
 
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +13,8 @@ import android.widget.TextView;
 import java.util.List;
 
 import br.com.senac.cademeulivro.R;
+import br.com.senac.cademeulivro.dao.ObraTagDAO;
+import br.com.senac.cademeulivro.helpers.DatabaseHelper;
 import br.com.senac.cademeulivro.model.Tag;
 
 /**
@@ -22,9 +25,13 @@ public class AdapterListViewTag extends BaseAdapter {
 
     private LayoutInflater inflater;
     private List<Tag> itens;
-
+    private ObraTagDAO obraTagDAO;
+    private SQLiteDatabase mDatabase;
 
     public AdapterListViewTag(Context context, List<Tag> itens) {
+
+        mDatabase = new DatabaseHelper(context).getWritableDatabase();
+        obraTagDAO = new ObraTagDAO(mDatabase);
 
         this.itens = itens;
         inflater=LayoutInflater.from(context);
@@ -59,7 +66,7 @@ public class AdapterListViewTag extends BaseAdapter {
         LinearLayout layoutTags= (LinearLayout) view.findViewById(R.id.layoutTags);
 
         nome.setText((item.getNomeTag()!=null && item.getNomeTag().length()>20) ? item.getNomeTag().substring(0,20)+"..." : item.getNomeTag());
-        usos.setText(String.valueOf(item.getTotalUsos()));
+        usos.setText(String.valueOf(obraTagDAO.getAplicacoes(item.getIdTag())));
         layoutTags.setBackgroundColor(Color.parseColor(item.getCorHex()));
 
         return view;

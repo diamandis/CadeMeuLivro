@@ -1,5 +1,6 @@
 package br.com.senac.cademeulivro.activity.obra;
 
+import android.app.Dialog;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
@@ -12,22 +13,36 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutCompat;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import br.com.senac.cademeulivro.R;
+import br.com.senac.cademeulivro.dao.ContainerDAO;
 import br.com.senac.cademeulivro.dao.ObraDAO;
+import br.com.senac.cademeulivro.dao.ObraTagDAO;
+import br.com.senac.cademeulivro.dao.TagDAO;
 import br.com.senac.cademeulivro.helpers.DatabaseHelper;
+import br.com.senac.cademeulivro.model.Container;
 import br.com.senac.cademeulivro.model.Obra;
+import br.com.senac.cademeulivro.model.Tag;
+import br.com.senac.cademeulivro.util.adapter.AdapterListViewContainerDialog;
+import br.com.senac.cademeulivro.util.adapter.AdapterListViewTagDialog;
 import br.com.senac.cademeulivro.util.constante.Constantes;
 
 public class ObraDetalhadaEditActivity extends AppCompatActivity {
@@ -37,13 +52,24 @@ public class ObraDetalhadaEditActivity extends AppCompatActivity {
     private boolean isOpen=false;
 
     private ObraDAO obraDao;
+    private TagDAO tagDao;
+    private ObraTagDAO obraTagDAO;
+    private ContainerDAO containerDAO;
     private SQLiteDatabase mDatabase;
+
     private EditText editTitulo, editAutor, editEditora, editDescricao, editISBN, editAnoPublicacao;
     private CheckBox emprestado;
+    private TextView TextViewContainer;
     private ImageView imgCapa;
+    private LinearLayout layoutTags;
+    private AdapterListViewTagDialog adapterListViewTag;
+    private AdapterListViewContainerDialog adapterContainer;
+
     private Obra obra;
     private Bitmap foto=null;
     private String pictureImagePath = "";
+
+    private List<Tag> tags;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,19 +85,51 @@ public class ObraDetalhadaEditActivity extends AppCompatActivity {
         editISBN = (EditText) findViewById(R.id.editIsbnObraEdit);
         editAnoPublicacao = (EditText) findViewById(R.id.editAnoObraEdit);
         emprestado = (CheckBox) findViewById(R.id.checkBoxEmprestadoEdit);
+        layoutTags = (LinearLayout) findViewById(R.id.layoutTags);
+        TextViewContainer = (TextView) findViewById(R.id.TextViewContainer);
 
         Bundle parametros=getIntent().getExtras();
+        mDatabase = new DatabaseHelper(getApplicationContext()).getWritableDatabase();
+        obraDao = new ObraDAO(mDatabase);
+        tagDao = new TagDAO(mDatabase);
+        obraTagDAO = new ObraTagDAO(mDatabase);
+        containerDAO = new ContainerDAO(mDatabase);
 
         if(parametros!=null) {
             obra= (Obra) parametros.getSerializable("obra");
+
+            tags=obraTagDAO.getByIdObra(obra.getIdObra());
+
             foto=parametros.getParcelable("capa");
             obra.setCapa(foto);
             preencheCampos(obra);
-            setTitle("Editar");//TODO verificar titulo do activity
+            setTitle("Editar");
         }
 
-        mDatabase = new DatabaseHelper(getApplicationContext()).getWritableDatabase();
-        obraDao = new ObraDAO(mDatabase);
+        if(tags!=null && tags.size()!=0) {
+
+            for (int i = 0; i < tags.size(); i++) {
+
+                Tag tag = tags.get(i);
+                final Button tagButton = new Button(this);
+                LinearLayoutCompat.LayoutParams layoutParams = new LinearLayoutCompat.LayoutParams(LinearLayoutCompat.LayoutParams.WRAP_CONTENT, LinearLayoutCompat.LayoutParams.WRAP_CONTENT);
+
+                tagButton.setPadding(10,0,10,0);
+                tagButton.setLayoutParams(layoutParams);
+                tagButton.setText(tag.getNomeTag());
+                tagButton.setTag(tag.getIdTag());
+                tagButton.setBackgroundResource(R.drawable.tags_custom_view);
+
+                tagButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        layoutTags.removeView(tagButton);
+                    }
+                });
+
+                layoutTags.addView(tagButton);
+            }
+        }
 
         //capturando o FAB e enviando sua animacao quando clicado
         fbMain= (FloatingActionButton) findViewById(R.id.fbMainObraEdit);
@@ -101,60 +159,10 @@ public class ObraDetalhadaEditActivity extends AppCompatActivity {
                     fb1.setClickable(true);
                     fb2.setClickable(true);
                     isOpen=true;
-
                 }
             }
         });
     }
-/*
-    public void dialogTags(){
-
-        builder = new AlertDialog.Builder(this);
-
-        //dialog de multipla escolha
-        final List<String> tagsList = Arrays.asList(tags);
-        builder.setMultiChoiceItems(tags, checkedTags, new DialogInterface.OnMultiChoiceClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which, boolean isChecked) {
-
-                // Update the current focused item's checked status
-                checkedTags[which] = isChecked;
-
-                // Get the current focused item
-                String currentItem = tagsList.get(which);
-
-                // Notify the current action
-                Toast.makeText(getApplicationContext(),
-                        currentItem + " " + isChecked, Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        builder.setTitle("Tags");
-
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-
-                for(int i=0;i<tagsList.size();i++){
-
-                    if(checkedTags[i]==true){
-                        tagCriar=new TextView(new ContextThemeWrapper(ObraDetalhadaEditActivity.this, R.style.tag_style));
-                        tagCriar.setText(tagsList.get(i));
-                        layoutTags.addView(tagCriar);
-                    }
-                }
-            }
-        });
-        // Set the negative/no button click listener
-        builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
-        dialog= builder.create();
-
-    }*/
 
     public void scannerIsbn (View v){
 
@@ -180,17 +188,42 @@ public class ObraDetalhadaEditActivity extends AppCompatActivity {
 
         obra.setTitulo(editTitulo.getText().toString());
         obra.setAutor(editAutor.getText().toString());
-        obra.setAnoPublicacao((Integer.parseInt(editAnoPublicacao.getText().toString())));
+        obra.setAnoPublicacao((editAnoPublicacao.getText().toString().trim().length()==0) ? 0 : Integer.parseInt(editAnoPublicacao.getText().toString()));
         obra.setDescricao(editDescricao.getText().toString());
         obra.setEditora(editEditora.getText().toString());
         obra.setEmprestado(emprestado.isChecked());
         obra.setIsbn(editISBN.getText().toString());
         obra.setCapa(foto);
 
+        /*if(TextViewContainer.getTag()!=null){
+            obra.setContainer(containerDAO.getById((Integer) TextViewContainer.getTag()));
+        }*/
+
         if(obra.getIdObra()!=null){
             obraDao.update(obra);
-        }else{
-            obraDao.insert(obra);
+
+            int childCount = layoutTags.getChildCount();
+
+            for (int k = 0; k < tags.size(); k++) {
+
+                obraTagDAO.delete(obra.getIdObra(), tags.get(k).getIdTag());
+            }
+
+            for (int i = 0; i < childCount; i++) {
+                View viewTag = layoutTags.getChildAt(i);
+
+                obraTagDAO.insert(obra.getIdObra(), (int) viewTag.getTag());
+            }
+
+        }else {
+            long idObra=obraDao.insert(obra);
+
+            int childCount = layoutTags.getChildCount();
+            for (int i = 0; i < childCount; i++) {
+                View viewTag = layoutTags.getChildAt(i);
+
+                obraTagDAO.insert((int)idObra,(int)viewTag.getTag());
+            }
         }
 
         Intent returnIntent = new Intent();
@@ -218,14 +251,54 @@ public class ObraDetalhadaEditActivity extends AppCompatActivity {
         Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
         startActivityForResult(cameraIntent, Constantes.CAMERA_REQUEST);
         */
-
-
     }
 
-    public void adicionarContainers(View v){
+    public void adicionarContainers(View v) {
 
-        //SingleChoiceClass dialogContainers=new SingleChoiceClass();
-        //dialogContainers.show(getSupportFragmentManager(),"dialogContainer");
+        final Dialog dialog= new Dialog(ObraDetalhadaEditActivity.this);
+        dialog.setTitle(getString(R.string.adicionar_container));
+        dialog.setContentView(R.layout.h_custom_dialog_lista);
+
+        ListView listViewDialog = (ListView) dialog.findViewById(R.id.listViewDialog);
+        Button button = (Button) dialog.findViewById(R.id.buttonDialog);
+
+        List<Container> listaContainers = containerDAO.getAll();
+        adapterContainer = new AdapterListViewContainerDialog(ObraDetalhadaEditActivity.this, listaContainers);
+        listViewDialog.setAdapter(adapterContainer);
+        listViewDialog.setOnItemClickListener(cliqueCurtoContainer());
+
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        dialog.show();
+    }
+
+    public void adicionarTags(View v) {
+
+        final Dialog dialog= new Dialog(ObraDetalhadaEditActivity.this);
+        dialog.setTitle(getString(R.string.adicionar_tag));
+        dialog.setContentView(R.layout.h_custom_dialog_lista);
+
+        ListView listViewDialog = (ListView) dialog.findViewById(R.id.listViewDialog);
+        Button button = (Button) dialog.findViewById(R.id.buttonDialog);
+
+        List<Tag> listaTags = tagDao.getListaTags();
+        adapterListViewTag = new AdapterListViewTagDialog(ObraDetalhadaEditActivity.this, listaTags);
+        listViewDialog.setAdapter(adapterListViewTag);
+        listViewDialog.setOnItemClickListener(cliqueCurtoTag());
+
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        dialog.show();
     }
 
     @Override
@@ -270,7 +343,6 @@ public class ObraDetalhadaEditActivity extends AppCompatActivity {
                         imgCapa.setScaleY(2);
                     }
 
-
                     Toast.makeText(this, "Ação realizada com sucesso!", Toast.LENGTH_SHORT).show();
 
                 }else {
@@ -279,7 +351,58 @@ public class ObraDetalhadaEditActivity extends AppCompatActivity {
                 break;
 
         }
+    }
 
+    public AdapterView.OnItemClickListener cliqueCurtoTag() {
+
+        return new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+
+                Tag tag= (Tag) adapterListViewTag.getItem(position);
+
+                //pega todos os componentes do layout e verifica se já foram inseridos
+                final int childCount = layoutTags.getChildCount();
+                for (int i = 0; i < childCount; i++) {
+                    View v = layoutTags.getChildAt(i);
+
+                    if(v.getTag()==tag.getIdTag()){
+                        return;
+                    }
+                }
+
+                final Button tagButton=new Button(ObraDetalhadaEditActivity.this);
+                LinearLayoutCompat.LayoutParams layoutParams = new LinearLayoutCompat.LayoutParams(LinearLayoutCompat.LayoutParams.WRAP_CONTENT, LinearLayoutCompat.LayoutParams.WRAP_CONTENT);
+
+                tagButton.setLayoutParams(layoutParams);
+                tagButton.setText(tag.getNomeTag());
+                tagButton.setTag(tag.getIdTag());
+                tagButton.setBackgroundResource(R.drawable.tags_custom_view);
+
+                tagButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        layoutTags.removeView(tagButton);
+                    }
+                });
+
+                layoutTags.addView(tagButton);
+            }
+        };
+    }
+
+    public AdapterView.OnItemClickListener cliqueCurtoContainer() {
+
+        return new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+
+                Container container= (Container) adapterContainer.getItem(position);
+
+                TextViewContainer.setText(container.getNomeContainer());
+                TextViewContainer.setTag(container.getIdContainer());
+            }
+        };
     }
 
     public void preencheCampos (Obra obra){
@@ -294,6 +417,11 @@ public class ObraDetalhadaEditActivity extends AppCompatActivity {
         imgCapa.setImageBitmap(obra.getCapa());
         imgCapa.setScaleX(1.5F);
         imgCapa.setScaleY(1.5F);
+
+        if(obra.getContainer()!=null){
+            TextViewContainer.setText(obra.getContainer().getNomeContainer());
+            TextViewContainer.setTag(obra.getContainer().getIdContainer());
+        }
     }
 
 }

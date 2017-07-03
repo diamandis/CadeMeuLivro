@@ -28,8 +28,8 @@ public class ContainerDAO {
         return mDatabaseHelper.insert("Container", null, getContentFrom(c));
     }
 
-    public void update(Container c) {
-        mDatabaseHelper.update("Container",getContentFrom(c), "_id = ?", new String[] { c.getIdContainer().toString() });
+    public long update(Container c) {
+        return mDatabaseHelper.update("Container",getContentFrom(c), "_id = ?", new String[] { c.getIdContainer().toString() });
     }
 
     public int delete(Integer id) {
@@ -38,6 +38,7 @@ public class ContainerDAO {
 
     public Container getById(Integer id) {
         Cursor cursor = mDatabaseHelper.query("Container",null, "_id = ?", new String[] { id.toString() },null,null,null);
+        cursor.moveToFirst();
         return getContainer(cursor);
     }
 
@@ -50,7 +51,7 @@ public class ContainerDAO {
             lista.add(c);
             cursor.moveToNext();
         }
-        cursor.close();;
+        cursor.close();
         return lista;
     }
 
@@ -92,6 +93,7 @@ public class ContainerDAO {
         container.setContainerTipos(getTipo(cursor.getInt(cursor.getColumnIndex("tipo_id"))));
 
         return container;
+
     }
 
 }

@@ -9,7 +9,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="7"
+        android:layout_weight="4"
         android:id="@+id/linearPager">
 
         <ImageView
@@ -24,7 +24,7 @@
             android:id="@+id/cadastro_pager"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="10" />
+            android:layout_weight="7" />
 
         <ImageView
             android:layout_width="0dp"
@@ -43,14 +43,14 @@
         android:layout_weight="5">
 
         <LinearLayout
-            android:orientation="vertical"
+            android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1">
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="0dp"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text="@string/nome"
@@ -59,14 +59,13 @@
                />
 
             <EditText
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:textSize="17dp"
                 android:layout_weight="1"
                 android:id="@+id/editNomeContainer"
                 android:hint="@string/hint_nome_container"
                 android:inputType="text"
-
                 />
 
         </LinearLayout>
@@ -101,13 +100,51 @@
 
         </LinearLayout>
 
-        <TextView
-            android:layout_weight="0.5"
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_weight="1.5"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:id="@+id/ultimaModificacao"
-            android:textSize="17dp"
-            />
+            android:layout_height="0dp">
+
+            <TextView
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:text="@string/ultimaLimpeza"
+                style="@style/textView_custom"
+                android:gravity="center"
+                />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <ImageButton
+                    android:background="@android:color/transparent"
+                    android:src="@mipmap/ic_calendar"
+                    android:layout_weight="1"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:id="@+id/imgBUltimaLimpCont"
+                    android:gravity="center"
+                    android:onClick="mostrarDatePicker"
+                    android:scaleX="0.7"
+                    android:scaleY="0.7"
+                    />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:id="@+id/textViewData"
+                    android:textAlignment="center"
+                    />
+
+            </LinearLayout>
+
+        </LinearLayout>
 
     </LinearLayout>
 

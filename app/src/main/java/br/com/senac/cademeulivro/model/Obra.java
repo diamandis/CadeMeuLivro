@@ -9,14 +9,21 @@ public class Obra implements Serializable{
     private Integer idObra;
     private String autor;
     private String editora;
-    private List<Tag> tags;
     private Bitmap capa;
     private boolean emprestado;
     private String titulo;
     private String descricao;
     private int anoPublicacao;
     private String isbn;
+    private Container container;
 
+    public Container getContainer() {
+        return container;
+    }
+
+    public void setContainer(Container container) {
+        this.container = container;
+    }
 
     public boolean isEmprestado() {
         return emprestado;
@@ -72,14 +79,6 @@ public class Obra implements Serializable{
 
     public void setEditora(String editora) {
         this.editora = editora;
-    }
-
-    public List<Tag> getTags() {
-        return tags;
-    }
-
-    public void setTags(List<Tag> tags) {
-        this.tags = tags;
     }
 
     public int getAnoPublicacao() {

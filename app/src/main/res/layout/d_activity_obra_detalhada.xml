@@ -245,9 +245,10 @@
                 android:layout_height="match_parent">
 
                 <LinearLayout
+                    android:id="@+id/layoutTagsDetalhada"
                     android:orientation="horizontal"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="wrap_content">
 
                     <!-- input das tags como textview via codigo usando o
                     style = tag_style-->

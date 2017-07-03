@@ -29,6 +29,7 @@ import android.widget.Toast;
 import java.util.List;
 
 import br.com.senac.cademeulivro.R;
+import br.com.senac.cademeulivro.activity.container.CadastroPagerActivity;
 import br.com.senac.cademeulivro.activity.container.ContainerEditActivity;
 import br.com.senac.cademeulivro.activity.container.ContainerListFragment;
 import br.com.senac.cademeulivro.activity.obra.ObraDetalhadaEditActivity;
@@ -60,8 +61,7 @@ public class MainActivity extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        // Create the adapter that will return a fragment for each of the three
-        // primary sections of the activity.
+
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
         // Set up the ViewPager with the sections adapter.
@@ -85,16 +85,12 @@ public class MainActivity extends AppCompatActivity {
 
 
         String PREFS_NAME = "MyPrefsFile";
-
-
         //primeira vez que o app é aberto
         SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
 
         if (settings.getBoolean("my_first_time", true)) {
             Boolean status = settings.edit().putBoolean("receberNotificacao", true).commit();
-            //inicar activity de instruções
-            //primeiroAcesso();
-            // record the fact that the app has been started at least once
+            primeiroAcesso();
             settings.edit().putBoolean("my_first_time", false).commit();
         }
     }
@@ -107,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
         switch (tabPosicao){
 
             case 0:
-                intent=new Intent(MainActivity.this,ContainerEditActivity.class);
+                intent=new Intent(MainActivity.this, ContainerEditActivity.class);
                 startActivity(intent);
 
                 break;
@@ -164,11 +160,6 @@ public class MainActivity extends AppCompatActivity {
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         SearchView searchView = (SearchView) menu.findItem(R.id.action_search)
                 .getActionView();
-        if (searchView != null ) {
-            /*searchView.setSearchableInfo(searchManager
-                    .getSearchableInfo(getComponentName()));
-            searchView.setIconifiedByDefault(false);*/
-        }
 
         SearchView.OnQueryTextListener queryTextListener = new SearchView.OnQueryTextListener() {
             public boolean onQueryTextChange(String newText) {
@@ -203,7 +194,7 @@ public class MainActivity extends AppCompatActivity {
 
                 Dialog dialog= new Dialog(MainActivity.this);
                 dialog.setTitle(getString(R.string.configuracoes));
-                dialog.setContentView(R.layout.h_custom_dialog);
+                dialog.setContentView(R.layout.h_custom_dialog_configuracoes);
 
                 final CheckBox notificacoes= (CheckBox) dialog.findViewById(R.id.checkboxNotificacoes);
 
@@ -304,9 +295,22 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(this, getString(R.string.falha_leitura), Toast.LENGTH_SHORT).show();
             }
         }
-
     }
 
+    private void primeiroAcesso() {
 
+        AlertDialog.Builder alert = new AlertDialog.Builder(MainActivity.this);
+        alert.setIcon(R.drawable.container_estante_icon);
+        alert.setTitle(R.string.bem_vindo);
+        alert.setMessage(R.string.primeiro_acesso);
+        //alert.setView(R.layout.dialog_bem_vindo);
+        alert.setPositiveButton(R.string.seguinte, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                startActivity(new Intent(MainActivity.this, CadastroPagerActivity.class));
+            }
+        });
+        alert.show();
+    }
 
 }

@@ -23,7 +23,6 @@ import br.com.senac.cademeulivro.dao.ContainerDAO;
 import br.com.senac.cademeulivro.helpers.DatabaseHelper;
 import br.com.senac.cademeulivro.model.Container;
 
-
 public class ContainerListFragment extends Fragment {
     private RecyclerView mRecyclerView;
     private ContainerDAO containerDAO;
@@ -65,7 +64,7 @@ public class ContainerListFragment extends Fragment {
             imgContainer = (ImageView) itemView.findViewById(R.id.imgContainer);
             txtNome = (TextView) itemView.findViewById(R.id.txtNome);
             txtTotalObras = (TextView) itemView.findViewById(R.id.txtTotalObras);
-            txtDtModificacao = (TextView) itemView.findViewById(R.id.txtDtModificacao);
+            //txtDtModificacao = (TextView) itemView.findViewById(R.id.txtDtModificacao);
             txtLocal = (TextView) itemView.findViewById(R.id.txtLocal);
         }
 
@@ -81,7 +80,9 @@ public class ContainerListFragment extends Fragment {
 
         @Override
         public void onClick(View v) {
-            //launch containerfragment + dados sem editar
+            Intent intent = new Intent(getActivity(), CadastroPagerActivity.class);
+            intent.putExtra("container_id", mContainer.getIdContainer());
+            startActivity(intent);
         }
 
         @Override
@@ -94,10 +95,23 @@ public class ContainerListFragment extends Fragment {
                         case 0: Intent intent = new Intent(getActivity(), CadastroPagerActivity.class);
                                 intent.putExtra("container_id", mContainer.getIdContainer());
                                 startActivity(intent);
-                                //editar CPagerActivity pra seetar valores via intent etc
                                 break;
-                        case 1: containerDAO.delete(mContainer.getIdContainer());
-                                refresh();
+                        case 1: final AlertDialog.Builder dialogConfirma = new AlertDialog.Builder(getActivity());
+                            dialogConfirma.setTitle("Deseja mesmo excluir esse contêiner?");
+                            dialogConfirma.setMessage("As obras nesse contêiner não serão removidas.");
+                                dialogConfirma.setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        mAdapter.remover(getAdapterPosition());
+                                    }
+                                });
+                                dialogConfirma.setNegativeButton("Não", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.cancel();
+                                    }
+                                });
+                                dialogConfirma.show();
                                 break;
                     }
                 }
@@ -108,33 +122,41 @@ public class ContainerListFragment extends Fragment {
     }
 
     private class ContainerAdapter extends RecyclerView.Adapter<ContainerHolder> {
-         private List<Container> mContainerList;
+        private List<Container> mContainerList;
 
-         public ContainerAdapter(List<Container> containerList) {
+        public ContainerAdapter(List<Container> containerList) {
             mContainerList = containerList;
-         }
+        }
 
-         @Override
-         public ContainerHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        @Override
+        public ContainerHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
 
             return new ContainerHolder(layoutInflater, parent);
-         }
+        }
 
-         @Override
-         public void onBindViewHolder(ContainerHolder holder, int position) {
-             Container c = mContainerList.get(position);
-             holder.bind(c);
-         }
+        @Override
+        public void onBindViewHolder(ContainerHolder holder, int position) {
+            Container c = mContainerList.get(position);
+            holder.bind(c);
+        }
 
-         @Override
-         public int getItemCount() {
-             return mContainerList.size();
-         }
+        @Override
+        public int getItemCount() {
+            return mContainerList.size();
+        }
 
-         public void setContainerList(List<Container> itens) {
-             mContainerList = itens;
-         }
+        public void setContainerList(List<Container> itens) {
+            mContainerList = itens;
+        }
+
+        public void remover(int position) {
+            Container removido = mContainerList.remove(position);
+            containerDAO.delete(removido.getIdContainer());
+            notifyItemRemoved(position);
+            notifyItemRangeChanged(position, mContainerList.size());
+        }
+
     }
 
     private void refresh() {
