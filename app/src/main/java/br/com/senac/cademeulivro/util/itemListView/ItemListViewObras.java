@@ -8,7 +8,7 @@ public class ItemListViewObras {
 
     private String titulo;
     private String autor;
-    private int capa;
+    //private int capa;
     private int edicao;
 
     public ItemListViewObras() {
@@ -18,7 +18,7 @@ public class ItemListViewObras {
     public ItemListViewObras(String titulo, String autor, int capa) {
         this.titulo = titulo;
         this.autor = autor;
-        this.capa = capa;
+        //this.capa = capa;
     }
 
     public int getEdicao() {
@@ -45,11 +45,11 @@ public class ItemListViewObras {
         this.autor = autor;
     }
 
-    public int getCapa() {
+    /*public int getCapa() {
         return capa;
     }
 
     public void setCapa(int capa) {
         this.capa = capa;
-    }
+    }*/
 }

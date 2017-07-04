@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import br.com.senac.cademeulivro.R;
@@ -15,7 +16,9 @@ import br.com.senac.cademeulivro.activity.obra.ObraDetalhadaActivity;
 import br.com.senac.cademeulivro.dao.ObraDAO;
 import br.com.senac.cademeulivro.helpers.DatabaseHelper;
 import br.com.senac.cademeulivro.model.Obra;
+import br.com.senac.cademeulivro.model.ObraPreview;
 import br.com.senac.cademeulivro.util.adapter.AdapterListViewObra;
+import br.com.senac.cademeulivro.util.adapter.AdapterListViewPesquisa;
 import br.com.senac.cademeulivro.util.classes.ResultadoPesquisa;
 
 
@@ -25,9 +28,10 @@ public class ResultadoPesquisaActivity extends AppCompatActivity {
     private ObraDAO obraDao;
     private SQLiteDatabase mDatabase;
     private AdapterListViewObra adapterListViewAcervo;
-    private AdapterListViewObra adapterListViewGoogle;
+    private AdapterListViewPesquisa adapterListViewGoogle;
     private boolean internoVisivel=false;
     private boolean externoVisivel=false;
+    private List<Obra> listaExterna;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,13 +51,13 @@ public class ResultadoPesquisaActivity extends AppCompatActivity {
         //capturando resultado interno
         if (parametros != null) {
 
-            List<Obra> lista = obraDao.getByName(parametros.getString("data"));
+            List<ObraPreview> lista = obraDao.getByName(parametros.getString("data"));
             adapterListViewAcervo = new AdapterListViewObra(this, lista);
             listaResultAcervo.setAdapter(adapterListViewAcervo);
         }
 
         //capturando resultado externo
-        List<Obra> listaExterna= externa.pesquisar(parametros.getString("data"));
+        listaExterna= externa.pesquisar(parametros.getString("data"));
 
         try {
             Thread.sleep(2000);
@@ -61,11 +65,11 @@ public class ResultadoPesquisaActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        adapterListViewGoogle = new AdapterListViewObra(this, listaExterna);
+        adapterListViewGoogle = new AdapterListViewPesquisa(this, listaExterna);
         listaResultGoogle.setAdapter(adapterListViewGoogle);
 
-        listaResultAcervo.setOnItemClickListener(cliqueCurto(adapterListViewAcervo));
-        listaResultGoogle.setOnItemClickListener(cliqueCurto(adapterListViewGoogle));
+        listaResultAcervo.setOnItemClickListener(cliqueCurtoAcervo());
+        listaResultGoogle.setOnItemClickListener(cliqueCurtoGoogle());
     }
 
     public void expandirInterno(View v){
@@ -90,16 +94,29 @@ public class ResultadoPesquisaActivity extends AppCompatActivity {
         }
     }
 
-    public AdapterView.OnItemClickListener cliqueCurto(final AdapterListViewObra adapter) {
+    public AdapterView.OnItemClickListener cliqueCurtoAcervo() {
 
         return new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
 
-                Obra obra = (Obra) adapter.getItem(position);
+                ObraPreview obra = (ObraPreview) adapterListViewAcervo.getItem(position);
+                Intent intent = new Intent(ResultadoPesquisaActivity.this, ObraDetalhadaActivity.class);
+                intent.putExtra("id",obra.getIdObra());
+                startActivity(intent);
+            }
+        };
+    }
+
+    public AdapterView.OnItemClickListener cliqueCurtoGoogle() {
+
+        return new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+
+                Obra obra = (Obra) adapterListViewGoogle.getItem(position);
 
                 Intent intent = new Intent(ResultadoPesquisaActivity.this, ObraDetalhadaActivity.class);
-                //imagem irá bugar se for com o objeto
                 intent.putExtra("capa",obra.getCapa());
                 obra.setCapa(null);
                 intent.putExtra("obra",obra);
@@ -107,6 +124,7 @@ public class ResultadoPesquisaActivity extends AppCompatActivity {
             }
         };
     }
+
 
     @Override
     public boolean onSupportNavigateUp(){

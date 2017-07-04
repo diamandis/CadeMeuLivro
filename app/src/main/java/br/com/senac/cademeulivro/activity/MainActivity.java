@@ -25,6 +25,13 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.Toast;
 
+import com.facebook.login.LoginManager;
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
+
 import br.com.senac.cademeulivro.R;
 import br.com.senac.cademeulivro.activity.container.CadastroPagerActivity;
 import br.com.senac.cademeulivro.activity.container.ContainerEditActivity;
@@ -43,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private FloatingActionButton fab;
     private int tabPosicao=0;
-
+    private GoogleApiClient mGoogleApiClient;
     private ViewPager mViewPager;
 
     @Override
@@ -85,6 +92,21 @@ public class MainActivity extends AppCompatActivity {
             primeiroAcesso();
             settings.edit().putBoolean("my_first_time", false).commit();
         }
+    }
+
+    @Override
+    protected void onStart() {
+        if(LoginManager.getInstance() == null){
+            GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                    .requestEmail()
+                    .build();
+            mGoogleApiClient = new GoogleApiClient.Builder(this)
+                    .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                    .build();
+            mGoogleApiClient.connect();
+        }
+
+        super.onStart();
     }
 
     public void fabFuncao(View v){
@@ -213,6 +235,25 @@ public class MainActivity extends AppCompatActivity {
 
                 break;
             case R.id.action_logout:
+
+                if(LoginManager.getInstance() != null){
+                    LoginManager.getInstance().logOut();
+                    Intent intent = new Intent(this, LoginActivity.class);
+                    startActivity(intent);
+                    finish();
+                }else{
+                    Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(
+                            new ResultCallback<Status>() {
+                                @Override
+                                public void onResult(Status status) {
+
+                                    Toast.makeText(getApplicationContext(),"Logged Out",Toast.LENGTH_SHORT).show();
+                                    Intent i=new Intent(getApplicationContext(),LoginActivity.class);
+                                    startActivity(i);
+                                }
+                            });
+
+                }
 
                 break;
         }

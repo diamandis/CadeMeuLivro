@@ -25,16 +25,17 @@ import br.com.senac.cademeulivro.dao.ObraDAO;
 import br.com.senac.cademeulivro.dao.ObraTagDAO;
 import br.com.senac.cademeulivro.helpers.DatabaseHelper;
 import br.com.senac.cademeulivro.model.Obra;
+import br.com.senac.cademeulivro.model.ObraPreview;
 import br.com.senac.cademeulivro.util.adapter.AdapterListViewObra;
 
 public class ObrasComATagActivity extends AppCompatActivity {
 
     private ListView listView;
     private AdapterListViewObra adapter;
-    private List<Obra> list;
+    private List<ObraPreview> list;
     private ObraTagDAO obraTagDAO;
     private SQLiteDatabase mDatabase;
-    private Obra obra;
+    private ObraPreview obra;
     private ObraDAO obraDAO;
 
     @Override
@@ -69,14 +70,11 @@ public class ObrasComATagActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
 
-                obra = (Obra)adapter.getItem(position);
+                obra = (ObraPreview)adapter.getItem(position);
 
                 Intent intent = new Intent(ObrasComATagActivity.this, ObraDetalhadaActivity.class);
-                intent.putExtra("capa",obra.getCapa());
-                obra.setCapa(null);
-                intent.putExtra("obra",obra);
+                intent.putExtra("id",obra.getIdObra());
                 startActivity(intent);
-
             }
         };
     }
@@ -90,7 +88,7 @@ public class ObrasComATagActivity extends AppCompatActivity {
                 PopupMenu popup = new PopupMenu(ObrasComATagActivity.this, view);
                 popup.getMenuInflater().inflate(R.menu.menu_popup, popup.getMenu());
 
-                obra = (Obra)adapter.getItem(position);
+                obra = (ObraPreview) adapter.getItem(position);
 
                 popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     public boolean onMenuItemClick(MenuItem item) {
@@ -100,7 +98,7 @@ public class ObrasComATagActivity extends AppCompatActivity {
                         if (idItem==R.id.popupEditar) {
 
                             Intent intent=new Intent(ObrasComATagActivity.this, ObraDetalhadaEditActivity.class);
-                            intent.putExtra("obra",obra);
+                            intent.putExtra("id",obra.getIdObra());
                             startActivity(intent);
 
                         } else {

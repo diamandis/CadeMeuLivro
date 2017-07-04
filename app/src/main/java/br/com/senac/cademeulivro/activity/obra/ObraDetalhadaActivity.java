@@ -16,6 +16,7 @@ import android.widget.TextView;
 import java.util.List;
 
 import br.com.senac.cademeulivro.R;
+import br.com.senac.cademeulivro.dao.ObraDAO;
 import br.com.senac.cademeulivro.dao.ObraTagDAO;
 import br.com.senac.cademeulivro.helpers.DatabaseHelper;
 import br.com.senac.cademeulivro.model.Obra;
@@ -32,7 +33,7 @@ public class ObraDetalhadaActivity extends AppCompatActivity {
     private Button botaoConcluir;
     private LinearLayout layoutTagsDetalhada;
     private Bitmap imagem;
-
+    private ObraDAO obraDAO;
     private ObraTagDAO obraTagDAO;
     private SQLiteDatabase mDatabase;
     private List<Tag> tags;
@@ -58,15 +59,17 @@ public class ObraDetalhadaActivity extends AppCompatActivity {
         Bundle parametros = getIntent().getExtras();
         mDatabase = new DatabaseHelper(getApplicationContext()).getWritableDatabase();
         obraTagDAO= new ObraTagDAO(mDatabase);
+        obraDAO= new ObraDAO(mDatabase);
+
 
         if (parametros!=null) {
-            obra = (Obra) parametros.getSerializable("obra");
+            if(parametros.getSerializable("obra")!=null){
+                obra= (Obra) parametros.getSerializable("obra");
+                obra.setCapa((Bitmap) parametros.getParcelable("capa"));
+            }else{
+                obra= (Obra) obraDAO.getById(parametros.getInt("id"));
+            }
             tags=obraTagDAO.getByIdObra(obra.getIdObra());
-
-            imagem=(Bitmap) parametros.getParcelable("capa");
-            capa.setImageBitmap(imagem);
-            capa.setScaleX(1.5F);
-            capa.setScaleY(1.5F);
 
             preencheCampos(obra);
 
@@ -99,14 +102,15 @@ public class ObraDetalhadaActivity extends AppCompatActivity {
     public void obraDetalhadaEditar(View v) {
 
         Intent intent=new Intent(this, ObraDetalhadaEditActivity.class);
-
-        intent.putExtra("capa",imagem);
-
-        obra.setCapa(null);
-        intent.putExtra("obra",obra);
+        if(obra.getIdObra()==null){
+            intent.putExtra("capa",obra.getCapa());
+            obra.setCapa(null);
+            intent.putExtra("obra",obra);
+        }else{
+            intent.putExtra("id",obra.getIdObra());
+        }
 
         startActivityForResult(intent, Constantes.CLOSE_REQUEST);
-        //TODO fazer finish no activity for result
     }
 
     public void obraDetalhadaVoltar(View v){ finish(); }
@@ -121,7 +125,9 @@ public class ObraDetalhadaActivity extends AppCompatActivity {
         tvAutor.setText((obra.getAutor()!=null && obra.getAutor().length()>30) ? obra.getAutor().substring(0,30)+"..." : obra.getAutor());
         emprestado.setChecked(obra.isEmprestado());
         //TextViewConteinerObra.setText(obra.getContainer().getNomeContainer());
-        //capa.setImageBitmap(obra.getCapa());
+        capa.setImageBitmap(obra.getCapa());
+        capa.setScaleX(1.5F);
+        capa.setScaleY(1.5F);
     }
 
     @Override
