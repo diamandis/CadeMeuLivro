@@ -73,8 +73,8 @@ public class ContainerListFragment extends Fragment {
             imgContainer.setImageResource(mContainer.getContainerTipos().getTipoIcone());
             txtNome.setText(mContainer.getNomeContainer());
             DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
-            txtDtModificacao.setText(df.format(mContainer.getUltimaModificacao()));
-            txtTotalObras.setText(mContainer.getTotalObras());
+//            txtDtModificacao.setText(df.format(mContainer.getUltimaModificacao()));
+//            txtTotalObras.setText(mContainer.getTotalObras());
             txtLocal.setText(mContainer.getLocalContainer());
         }
 
