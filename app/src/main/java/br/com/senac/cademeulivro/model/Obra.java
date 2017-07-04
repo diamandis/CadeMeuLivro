@@ -15,6 +15,15 @@ public class Obra implements Serializable{
     private String descricao;
     private int anoPublicacao;
     private String isbn;
+    private Container container;
+
+    public Container getContainer() {
+        return container;
+    }
+
+    public void setContainer(Container container) {
+        this.container = container;
+    }
 
     public boolean isEmprestado() {
         return emprestado;

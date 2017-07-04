@@ -15,13 +15,12 @@ import br.com.senac.cademeulivro.R;
 import br.com.senac.cademeulivro.activity.obra.ObraDetalhadaActivity;
 import br.com.senac.cademeulivro.model.Obra;
 import br.com.senac.cademeulivro.util.adapter.AdapterListViewObra;
-import br.com.senac.cademeulivro.util.adapter.AdapterListViewPesquisa;
 import br.com.senac.cademeulivro.util.classes.Scanner;
 
 public class ResultadoScannerActivity extends AppCompatActivity {
 
     private ListView listView;
-    private AdapterListViewPesquisa adapterListViewObra;
+    private AdapterListViewObra adapterListViewObra;
     private List<Obra> lista;
 
     @Override
@@ -45,7 +44,7 @@ public class ResultadoScannerActivity extends AppCompatActivity {
 
         //botar thread sleep
 
-        adapterListViewObra = new AdapterListViewPesquisa(this, lista);
+        adapterListViewObra = new AdapterListViewObra(this, lista);
         listView.setAdapter(adapterListViewObra);
 
         listView.setOnItemClickListener(cliqueCurto());
@@ -62,12 +61,15 @@ public class ResultadoScannerActivity extends AppCompatActivity {
                 Obra obra = (Obra) adapterListViewObra.getItem(position);
 
                 Intent intent = new Intent(ResultadoScannerActivity.this, ObraDetalhadaActivity.class);
+                //imagem irá bugar se for com o objeto
                 intent.putExtra("capa",obra.getCapa());
                 obra.setCapa(null);
                 intent.putExtra("obra",obra);
                 startActivity(intent);
             }
         };
+
+
     }
 
     @Override

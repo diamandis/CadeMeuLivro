@@ -1,5 +1,6 @@
 package br.com.senac.cademeulivro.activity.container;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -14,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -24,6 +26,7 @@ import br.com.senac.cademeulivro.dao.ContainerTiposDAO;
 import br.com.senac.cademeulivro.helpers.DatabaseHelper;
 import br.com.senac.cademeulivro.model.Container;
 import br.com.senac.cademeulivro.model.ContainerTipos;
+import br.com.senac.cademeulivro.util.DatePickerFragment;
 import br.com.senac.cademeulivro.util.classes.AlarmReceiver;
 import br.com.senac.cademeulivro.util.classes.GerenciadorDeNotificacoes;
 
@@ -33,9 +36,11 @@ public class CadastroPagerActivity extends AppCompatActivity {
     private List<ContainerTipos> mContainerTiposList;
     private SQLiteDatabase mDatabase;
     private EditText localContainer, nomeContainer;
-    private TextView ultimaModificacao;
+    private TextView txtData;
     private ContainerTipos tipo;
     private Integer id;
+    private Date date;
+    private DateFormat df;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,12 +68,13 @@ public class CadastroPagerActivity extends AppCompatActivity {
             }
         });
 
+        txtData = (TextView) findViewById(R.id.textViewData);
         localContainer = (EditText) findViewById(R.id.editLocalContainer);
         nomeContainer = (EditText) findViewById(R.id.editNomeContainer);
         //ultimaModificacao = (TextView) findViewById(R.id.ultimaModificacao);
 
-        DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
-        ultimaModificacao.setText(getString(R.string.ultima_modif_container, df.format(new Date())));
+        df = new SimpleDateFormat("dd/MM/yyyy");
+        //ultimaModificacao.setText(getString(R.string.ultima_modif_container, df.format(new Date())));
 
         id = (Integer) getIntent().getSerializableExtra("container_id");
         if(id !=null && id > 0) {
@@ -76,21 +82,35 @@ public class CadastroPagerActivity extends AppCompatActivity {
             Container c = daoContainer.getById(getIntent().getIntExtra("container_id",0));
             mViewPager.setCurrentItem(c.getContainerTipos().get_id()-1 );
             localContainer.setText(c.getLocalContainer());
-            ultimaModificacao.setText(df.format(c.getUltimaModificacao()));
+            txtData.setText(df.format(c.getUltimaModificacao()));
+            //ultimaModificacao.setText(df.format(c.getUltimaModificacao()));
             nomeContainer.setText(c.getNomeContainer());
         }
 
+    }
+
+    public void setDataResult(Date d) {
+        date = d;
+        //DateFormat df = DateFormat.getDateTimeInstance();
+        txtData.setText(df.format(date));
+        //txtData.setText(d.toString());
+    }
+
+    public void mostrarDatePicker(View v) {
+        FragmentManager fm = getSupportFragmentManager();
+        DatePickerFragment picker = DatePickerFragment.newInstance(date);
+        picker.show(fm, "picker");
     }
 
     public void containerCancelar(View v) {
         finish();
     }
 
-    public void containerSalvar(View v) {
+    public void containerSalvar(View v) throws ParseException {
         Container novoContainer = new Container();
         novoContainer.setNomeContainer(nomeContainer.getText().toString());
         novoContainer.setLocalContainer(localContainer.getText().toString());
-        novoContainer.setUltimaModificacao(new Date());
+        novoContainer.setUltimaModificacao(df.parse(txtData.getText().toString()));
         novoContainer.setIdBiblioteca(1); //user teste
         novoContainer.setContainerTipos(new ContainerTipos(mViewPager.getCurrentItem()+1)); //pager conta a partir do 0
         ContainerDAO containerDAO = new ContainerDAO(mDatabase);

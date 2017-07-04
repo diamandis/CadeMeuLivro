@@ -61,7 +61,7 @@ public class ContainerListFragment extends Fragment {
             imgContainer = (ImageView) itemView.findViewById(R.id.imgContainer);
             txtNome = (TextView) itemView.findViewById(R.id.txtNome);
             txtTotalObras = (TextView) itemView.findViewById(R.id.txtTotalObras);
-            //txtDtModificacao = (TextView) itemView.findViewById(R.id.txtDtModificacao);
+            txtDtModificacao = (TextView) itemView.findViewById(R.id.txtDtModificacao);
             txtLocal = (TextView) itemView.findViewById(R.id.txtLocal);
         }
 

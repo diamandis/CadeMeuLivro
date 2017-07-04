@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,7 +31,7 @@ public class TagDAO {
     }
 
     public Tag getById(Integer id) {
-        Cursor cursor = mDatabaseHelper.query("Tag", null, "_id = ?", new String[] { id.toString() },null,null,null);
+        Cursor cursor = mDatabaseHelper.query("Tag",null, "_id = ?", new String[] { id.toString() },null,null,null);
         cursor.moveToFirst();
         return getTag(cursor);
     }

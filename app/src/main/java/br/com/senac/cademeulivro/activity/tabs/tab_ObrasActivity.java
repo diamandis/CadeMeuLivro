@@ -24,7 +24,6 @@ import br.com.senac.cademeulivro.dao.ObraDAO;
 import br.com.senac.cademeulivro.dao.ObraTagDAO;
 import br.com.senac.cademeulivro.helpers.DatabaseHelper;
 import br.com.senac.cademeulivro.model.Obra;
-import br.com.senac.cademeulivro.model.ObraPreview;
 import br.com.senac.cademeulivro.util.adapter.AdapterListViewObra;
 
 
@@ -35,8 +34,9 @@ public class tab_ObrasActivity extends Fragment {
     private ObraTagDAO obraTagDAO;
     private SQLiteDatabase mDatabase;
     private AdapterListViewObra adapterListView;
-    private List<ObraPreview> itens;
-    private ObraPreview obra;
+    private List<Obra> itens;
+    private Obra obra;
+    private View viewDeletar;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -59,10 +59,12 @@ public class tab_ObrasActivity extends Fragment {
 
     public void createListView() {
 
-        itens = obraDao.getListObrasPreview();
+        itens = obraDao.getListaObras();
+        //Obra obra=obraDao.getById(1);
         adapterListView = new AdapterListViewObra(getActivity(), itens);
         listView.setAdapter(adapterListView);
     }
+
 
 
     public AdapterView.OnItemClickListener cliqueCurto() {
@@ -71,10 +73,12 @@ public class tab_ObrasActivity extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
 
-                obra = (ObraPreview)adapterListView.getItem(position);
+                obra = (Obra)adapterListView.getItem(position);
 
                 Intent intent = new Intent(getActivity(), ObraDetalhadaActivity.class);
-                intent.putExtra("id",obra.getIdObra());
+                intent.putExtra("capa",obra.getCapa());
+                obra.setCapa(null);
+                intent.putExtra("obra",obra);
                 startActivity(intent);
 
             }
@@ -90,8 +94,8 @@ public class tab_ObrasActivity extends Fragment {
                 PopupMenu popup = new PopupMenu(getContext(), view);
                 popup.getMenuInflater().inflate(R.menu.menu_popup, popup.getMenu());
 
-                obra = (ObraPreview) adapterListView.getItem(position);
-
+                obra = (Obra)adapterListView.getItem(position);
+                viewDeletar=view;
                 popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     public boolean onMenuItemClick(MenuItem item) {
 
@@ -100,7 +104,7 @@ public class tab_ObrasActivity extends Fragment {
                         if (idItem==R.id.popupEditar) {
 
                             Intent intent=new Intent(getContext(), ObraDetalhadaEditActivity.class);
-                            intent.putExtra("id",obra.getIdObra());
+                            intent.putExtra("obra",obra);
                             startActivity(intent);
 
                         } else {

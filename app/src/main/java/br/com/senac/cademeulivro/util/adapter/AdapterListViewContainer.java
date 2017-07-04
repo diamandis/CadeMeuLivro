@@ -60,7 +60,7 @@ public class AdapterListViewContainer extends BaseAdapter {
         //Resgatar os dois textviews e o imageview para insercao do conteudo
         TextView nome = (TextView) view.findViewById(R.id.txtNome);
         TextView local = (TextView) view.findViewById(R.id.txtLocal);
-        TextView dtModificao = (TextView) view.findViewById(R.id.txtDtModificao);
+        TextView dtModificao = (TextView) view.findViewById(R.id.txtDtModificacao);
         ImageView icone= (ImageView) view.findViewById(R.id.imgContainer);
 
 
