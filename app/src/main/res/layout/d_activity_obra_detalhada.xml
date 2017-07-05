@@ -18,19 +18,14 @@
             android:layout_width="match_parent"
             android:layout_height="0dp">
 
-            <LinearLayout
+            <ImageView
                 android:layout_weight="1"
                 android:layout_width="0dp"
-                android:padding="10dp"
-                android:layout_height="match_parent">
+                android:layout_height="wrap_content"
+                android:id="@+id/ImageViewCapaObra"
+                android:layout_gravity="center"
+                />
 
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/ImageViewCapaObra"
-                    android:layout_gravity="center"
-                    />
-            </LinearLayout>
             <LinearLayout
                 android:layout_weight="1.3"
                 android:layout_width="0dp"
@@ -203,7 +198,6 @@
                 />
 
             <TextView
-                android:paddingLeft="10dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/TextViewDescricaoObra"

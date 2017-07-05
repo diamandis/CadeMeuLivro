@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import br.com.senac.cademeulivro.model.Obra;
-import br.com.senac.cademeulivro.model.ObraPreview;
 import br.com.senac.cademeulivro.model.Tag;
 
 public class ObraTagDAO {
@@ -60,18 +59,22 @@ public class ObraTagDAO {
         return lista;
     }
 
-    public List<ObraPreview> getByIdTag(Integer id) {
+    public List<Obra> getByIdTag(Integer id) {
 
         Cursor cursor = mDatabaseHelper.rawQuery("SELECT * FROM ObraTag WHERE tag_id = " + id, null);
 
-        List<ObraPreview> lista=new ArrayList<>();
+        List<Obra> lista=new ArrayList<>();
 
         try {
             cursor.moveToFirst();
             while(!cursor.isAfterLast()) {
                 Cursor cursorObras = mDatabaseHelper.rawQuery("SELECT * FROM Obra WHERE _id = " + cursor.getInt(cursor.getColumnIndex("obra_id")), null);
 
-                lista.add(getObraPreview(cursorObras));
+                if(cursor.moveToLast()==false){
+                    return lista;
+                }
+
+                lista.add(getObra(cursorObras));
                 cursor.moveToNext();
             }
         } finally {
@@ -125,18 +128,5 @@ public class ObraTagDAO {
         int numero=cursor.getCount();
 
         return numero;
-    }
-
-    private ObraPreview getObraPreview(Cursor cursor) {
-
-        boolean valor=cursor.moveToLast();
-        ObraPreview o=new ObraPreview();
-
-        o.setTitulo(cursor.getString(cursor.getColumnIndex("titulo")));
-        o.setIdObra(cursor.getInt(cursor.getColumnIndex("_id")));
-        o.setAutor(cursor.getString(cursor.getColumnIndex("autor")));
-        o.setEditora(cursor.getString(cursor.getColumnIndex("editora")));
-
-        return o;
     }
 }

@@ -25,13 +25,6 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.Toast;
 
-import com.facebook.login.LoginManager;
-import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.common.api.Status;
-
 import br.com.senac.cademeulivro.R;
 import br.com.senac.cademeulivro.activity.container.CadastroPagerActivity;
 import br.com.senac.cademeulivro.activity.container.ContainerEditActivity;
@@ -50,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private FloatingActionButton fab;
     private int tabPosicao=0;
-    private GoogleApiClient mGoogleApiClient;
+
     private ViewPager mViewPager;
 
     @Override
@@ -69,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
+        tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
 
         fab = (FloatingActionButton) findViewById(R.id.fab);
 
@@ -92,21 +86,6 @@ public class MainActivity extends AppCompatActivity {
             primeiroAcesso();
             settings.edit().putBoolean("my_first_time", false).commit();
         }
-    }
-
-    @Override
-    protected void onStart() {
-        if(LoginManager.getInstance() == null){
-            GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                    .requestEmail()
-                    .build();
-            mGoogleApiClient = new GoogleApiClient.Builder(this)
-                    .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
-                    .build();
-            mGoogleApiClient.connect();
-        }
-
-        super.onStart();
     }
 
     public void fabFuncao(View v){
@@ -236,25 +215,6 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case R.id.action_logout:
 
-                if(LoginManager.getInstance() != null){
-                    LoginManager.getInstance().logOut();
-                    Intent intent = new Intent(this, LoginActivity.class);
-                    startActivity(intent);
-                    finish();
-                }else{
-                    Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(
-                            new ResultCallback<Status>() {
-                                @Override
-                                public void onResult(Status status) {
-
-                                    Toast.makeText(getApplicationContext(),"Logged Out",Toast.LENGTH_SHORT).show();
-                                    Intent i=new Intent(getApplicationContext(),LoginActivity.class);
-                                    startActivity(i);
-                                }
-                            });
-
-                }
-
                 break;
         }
 
@@ -336,7 +296,6 @@ public class MainActivity extends AppCompatActivity {
         alert.setIcon(R.drawable.container_estante_icon);
         alert.setTitle(R.string.bem_vindo);
         alert.setMessage(R.string.primeiro_acesso);
-        //alert.setView(R.layout.dialog_bem_vindo);
         alert.setPositiveButton(R.string.seguinte, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {

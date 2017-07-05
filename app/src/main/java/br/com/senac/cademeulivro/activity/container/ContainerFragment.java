@@ -35,20 +35,6 @@ public class ContainerFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.g_fragment_container,container, false);
-/*
-        ImageView icone = (ImageView) v.findViewById(R.id.iconeContainer);
-        TextView tipoNome = (TextView) v.findViewById(R.id.tipoContainer);
-        EditText localContainer = (EditText) v.findViewById(R.id.editLocalContainer);
-        EditText nomeContainer = (EditText) v.findViewById(R.id.editNomeContainer);
-        TextView totalObras = (TextView) v.findViewById(R.id.txtTotalObras);
-        TextView ultimaModificacao = (TextView) v.findViewById(R.id.ultimaModificacao);
-
-        icone.setImageResource(tipo.getTipoIcone());
-        tipoNome.setText(tipo.getTipoNome());
-        totalObras.setText("0 obras");
-        ultimaModificacao.setText(new Date().toString());
-*/
-
 
         ImageView icone = (ImageView) v.findViewById(R.id.iconeContainer);
         TextView tipoNome = (TextView) v.findViewById(R.id.tipoContainer);

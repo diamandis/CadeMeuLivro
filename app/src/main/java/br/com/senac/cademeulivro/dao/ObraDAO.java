@@ -9,8 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import br.com.senac.cademeulivro.model.Obra;
-import br.com.senac.cademeulivro.model.ObraPreview;
-import br.com.senac.cademeulivro.util.classes.ImageConverter;
 
 
 public class ObraDAO {
@@ -40,39 +38,23 @@ public class ObraDAO {
         return getObra(cursor);
     }
 
-    public List<ObraPreview> getByName(String valor) {
+    public List<Obra> getByName(String valor) {
 
         String query = "select * from Obra where autor like '%"+valor+"%' or titulo like '%"+valor+"%'";
         Cursor cursor = mDatabaseHelper.rawQuery(query, null);
 
-        List<ObraPreview> lista=new ArrayList<>();
+        List<Obra> lista=new ArrayList<>();
 
         try {
             cursor.moveToFirst();
             while(!cursor.isAfterLast()) {
-                lista.add(getObraPreview(cursor));
+                lista.add(getObra(cursor));
                 cursor.moveToNext();
             }
         } finally {
             cursor.close();
         }
 
-        return lista;
-    }
-
-    public List<ObraPreview> getListObrasPreview(){
-        Cursor cursor = mDatabaseHelper.query("Obra", null, null, null, null, null, null);
-        List<ObraPreview> lista = new ArrayList<>();
-
-        try {
-            cursor.moveToFirst();
-            while(!cursor.isAfterLast()) {
-                lista.add(getObraPreview(cursor));
-                cursor.moveToNext();
-            }
-        } finally {
-            cursor.close();
-        }
         return lista;
     }
 
@@ -109,7 +91,7 @@ public class ObraDAO {
         //content.put("container_id", o.getContainer().getIdContainer());
 
         if (o.getCapa()!=null) {
-            content.put("capa",ImageConverter.toByteArray(o.getCapa()));
+            //content.put("capa",ImageConverter.toByteArray(o.getCapa()));
         } else {
             content.put("capa", (byte[]) null);
         }
@@ -118,7 +100,6 @@ public class ObraDAO {
     }
 
     private Obra getObra(Cursor cursor) {
-
         Obra o = new Obra();
 
         o.setTitulo(cursor.getString(cursor.getColumnIndex("titulo")));
@@ -127,7 +108,7 @@ public class ObraDAO {
         o.setEditora(cursor.getString(cursor.getColumnIndex("editora")));
 
         if (cursor.getBlob(cursor.getColumnIndex("capa"))!=null) {
-            o.setCapa(ImageConverter.toBitmap(cursor.getBlob(cursor.getColumnIndex("capa"))));
+            //o.setCapa(ImageConverter.toBitmap(cursor.getBlob(cursor.getColumnIndex("capa"))));
         }else {
             o.setCapa(null);
         }
@@ -137,18 +118,6 @@ public class ObraDAO {
         o.setEmprestado(cursor.getInt(cursor.getColumnIndex("emprestado")) == 1);
         o.setIsbn(cursor.getString(cursor.getColumnIndex("isbn")));
         //o.setContainer(containerDAO.getById(cursor.getInt(cursor.getColumnIndex("container_id"))));
-
-        return o;
-    }
-
-
-    private ObraPreview getObraPreview(Cursor cursor) {
-        ObraPreview o=new ObraPreview();
-
-        o.setTitulo(cursor.getString(cursor.getColumnIndex("titulo")));
-        o.setIdObra(cursor.getInt(cursor.getColumnIndex("_id")));
-        o.setAutor(cursor.getString(cursor.getColumnIndex("autor")));
-        o.setEditora(cursor.getString(cursor.getColumnIndex("editora")));
 
         return o;
     }

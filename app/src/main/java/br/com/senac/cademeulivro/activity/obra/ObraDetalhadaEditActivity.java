@@ -96,15 +96,12 @@ public class ObraDetalhadaEditActivity extends AppCompatActivity {
         containerDAO = new ContainerDAO(mDatabase);
 
         if(parametros!=null) {
-            if(parametros.getSerializable("obra")!=null){
-                obra= (Obra) parametros.getSerializable("obra");
-                obra.setCapa((Bitmap) parametros.getParcelable("capa"));
-            }else{
-                obra= (Obra) obraDao.getById(parametros.getInt("id"));
-            }
+            obra= (Obra) parametros.getSerializable("obra");
 
             tags=obraTagDAO.getByIdObra(obra.getIdObra());
 
+            foto=parametros.getParcelable("capa");
+            obra.setCapa(foto);
             preencheCampos(obra);
             setTitle("Editar");
         }
@@ -196,9 +193,7 @@ public class ObraDetalhadaEditActivity extends AppCompatActivity {
         obra.setEditora(editEditora.getText().toString());
         obra.setEmprestado(emprestado.isChecked());
         obra.setIsbn(editISBN.getText().toString());
-        if(foto!=null){
-            obra.setCapa(foto);
-        }
+        obra.setCapa(foto);
 
         /*if(TextViewContainer.getTag()!=null){
             obra.setContainer(containerDAO.getById((Integer) TextViewContainer.getTag()));
@@ -336,14 +331,17 @@ public class ObraDetalhadaEditActivity extends AppCompatActivity {
 
                     File imgFile = new  File(pictureImagePath);
 
-                    foto = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+                    if(imgFile.exists()) {
+                        foto = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
 
-                    Matrix matrix = new Matrix();
-                    matrix.postRotate(90);
-                    foto=Bitmap.createBitmap(foto, 0, 0, foto.getWidth(), foto.getHeight(),matrix,false);
+                        Matrix matrix = new Matrix();
+                        matrix.postRotate(90);
+                        foto=Bitmap.createBitmap(foto, 0, 0, foto.getWidth(), foto.getHeight(), matrix, true);
 
-                    imgCapa.setImageBitmap(foto);
-
+                        imgCapa.setImageBitmap(foto);
+                        imgCapa.setScaleX(2);
+                        imgCapa.setScaleY(2);
+                    }
 
                     Toast.makeText(this, "Ação realizada com sucesso!", Toast.LENGTH_SHORT).show();
 
@@ -401,8 +399,8 @@ public class ObraDetalhadaEditActivity extends AppCompatActivity {
 
                 Container container= (Container) adapterContainer.getItem(position);
 
-                /*TextViewContainer.setText(container.getNomeContainer());
-                TextViewContainer.setTag(container.getIdContainer());*/
+                TextViewContainer.setText(container.getNomeContainer());
+                TextViewContainer.setTag(container.getIdContainer());
             }
         };
     }
@@ -420,10 +418,10 @@ public class ObraDetalhadaEditActivity extends AppCompatActivity {
         imgCapa.setScaleX(1.5F);
         imgCapa.setScaleY(1.5F);
 
-        /*if(obra.getContainer()!=null){
+        if(obra.getContainer()!=null){
             TextViewContainer.setText(obra.getContainer().getNomeContainer());
             TextViewContainer.setTag(obra.getContainer().getIdContainer());
-        }*/
+        }
     }
 
 }
