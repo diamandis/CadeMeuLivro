@@ -1,4 +1,4 @@
-package br.com.senac.cademeulivro.activity.container;
+package br.com.senac.cademeulivro.activity.tabs;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -19,11 +19,12 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 
 import br.com.senac.cademeulivro.R;
+import br.com.senac.cademeulivro.activity.container.CadastroPagerActivity;
 import br.com.senac.cademeulivro.dao.ContainerDAO;
 import br.com.senac.cademeulivro.helpers.DatabaseHelper;
 import br.com.senac.cademeulivro.model.Container;
 
-public class ContainerListFragment extends Fragment {
+public class tab_ContainerListFragment extends Fragment {
     private RecyclerView mRecyclerView;
     private ContainerDAO containerDAO;
     private ContainerAdapter mAdapter;

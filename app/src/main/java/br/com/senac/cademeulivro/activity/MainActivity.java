@@ -27,8 +27,7 @@ import android.widget.Toast;
 
 import br.com.senac.cademeulivro.R;
 import br.com.senac.cademeulivro.activity.container.CadastroPagerActivity;
-import br.com.senac.cademeulivro.activity.container.ContainerEditActivity;
-import br.com.senac.cademeulivro.activity.container.ContainerListFragment;
+import br.com.senac.cademeulivro.activity.tabs.tab_ContainerListFragment;
 import br.com.senac.cademeulivro.activity.obra.ObraDetalhadaEditActivity;
 import br.com.senac.cademeulivro.activity.resultados.ResultadoPesquisaActivity;
 import br.com.senac.cademeulivro.activity.resultados.ResultadoScannerActivity;
@@ -59,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
+        mViewPager.setOffscreenPageLimit(3);
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
@@ -234,7 +234,7 @@ public class MainActivity extends AppCompatActivity {
             switch (position) {
 
                 case 0:
-                    ContainerListFragment tabContainers=new ContainerListFragment();
+                    tab_ContainerListFragment tabContainers=new tab_ContainerListFragment();
                     return tabContainers;
                 case 1:
                     tab_ObrasActivity tabObras=new tab_ObrasActivity();

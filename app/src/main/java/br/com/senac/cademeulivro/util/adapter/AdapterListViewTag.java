@@ -72,4 +72,7 @@ public class AdapterListViewTag extends BaseAdapter {
         return view;
     }
 
+    public void setItens(List<Tag> itens) {
+        this.itens = itens;
+    }
 }

@@ -47,24 +47,32 @@ public class tab_ObrasActivity extends Fragment {
         obraDao = new ObraDAO(mDatabase);
         obraTagDAO = new ObraTagDAO(mDatabase);
         listView = (ListView) rootView.findViewById(R.id.listaObras);
-        createListView();
 
         listView.setOnItemClickListener(cliqueCurto());
         listView.setOnItemLongClickListener(cliqueLongo());
-
+        refresh();
 
         return rootView;
     }
 
 
-    public void createListView() {
-
-        itens = obraDao.getListaObras();
-        //Obra obra=obraDao.getById(1);
-        adapterListView = new AdapterListViewObra(getActivity(), itens);
-        listView.setAdapter(adapterListView);
+    @Override
+    public void onResume() {
+        super.onResume();
+        refresh();
     }
 
+    private void refresh() {
+        List<Obra> itens = obraDao.getListaObras();
+        if (adapterListView == null) {
+            adapterListView = new AdapterListViewObra(getActivity(), itens);
+            listView.setAdapter(adapterListView);
+        } else {
+            adapterListView.setItens(itens);
+            adapterListView.notifyDataSetChanged();
+        }
+
+    }
 
 
     public AdapterView.OnItemClickListener cliqueCurto() {

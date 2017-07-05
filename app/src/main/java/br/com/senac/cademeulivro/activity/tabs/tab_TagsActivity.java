@@ -21,7 +21,9 @@ import br.com.senac.cademeulivro.activity.tag.TagEditActivity;
 import br.com.senac.cademeulivro.dao.ObraTagDAO;
 import br.com.senac.cademeulivro.dao.TagDAO;
 import br.com.senac.cademeulivro.helpers.DatabaseHelper;
+import br.com.senac.cademeulivro.model.Obra;
 import br.com.senac.cademeulivro.model.Tag;
+import br.com.senac.cademeulivro.util.adapter.AdapterListViewObra;
 import br.com.senac.cademeulivro.util.adapter.AdapterListViewTag;
 import br.com.senac.cademeulivro.util.constante.Constantes;
 
@@ -46,19 +48,29 @@ public class tab_TagsActivity extends Fragment {
         obraTagDAO = new ObraTagDAO(mDatabase);
         listView = (ListView) rootView.findViewById(R.id.listaTags);
 
-        createListView();
-
         listView.setOnItemLongClickListener(cliqueLongo());
         listView.setOnItemClickListener(cliqueCurto());
+        refresh();
 
         return rootView;
     }
 
-    public void createListView(){
+    @Override
+    public void onResume() {
+        super.onResume();
+        refresh();
+    }
 
-        itens = tagDAO.getListaTags();
-        adapterListViewTags = new AdapterListViewTag(getActivity(), itens);
-        listView.setAdapter(adapterListViewTags);
+    private void refresh() {
+        List<Tag> itens = tagDAO.getListaTags();
+        if (adapterListViewTags == null) {
+            adapterListViewTags = new AdapterListViewTag(getActivity(), itens);
+            listView.setAdapter(adapterListViewTags);
+        } else {
+            adapterListViewTags.setItens(itens);
+            adapterListViewTags.notifyDataSetChanged();
+        }
+
     }
 
     public AdapterView.OnItemClickListener cliqueCurto() {
