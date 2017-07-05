@@ -5,8 +5,4 @@
     android:layout_width="wrap_content"
     android:calendarViewShown="false"
     android:id="@+id/pickerData">
-<<<<<<< HEAD
 </DatePicker>
-=======
-</DatePicker>
->>>>>>> origin/master
