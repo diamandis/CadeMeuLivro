@@ -61,7 +61,7 @@ public class ContainerListFragment extends Fragment {
             imgContainer = (ImageView) itemView.findViewById(R.id.imgContainer);
             txtNome = (TextView) itemView.findViewById(R.id.txtNome);
             txtTotalObras = (TextView) itemView.findViewById(R.id.txtTotalObras);
-            //txtDtModificacao = (TextView) itemView.findViewById(R.id.txtDtModificacao);
+            txtDtModificacao = (TextView) itemView.findViewById(R.id.txtDtModificacao);
             txtLocal = (TextView) itemView.findViewById(R.id.txtLocal);
         }
 
@@ -90,26 +90,26 @@ public class ContainerListFragment extends Fragment {
                 public void onClick(DialogInterface dialog, int which) {
                     switch(which) {
                         case 0: Intent intent = new Intent(getActivity(), CadastroPagerActivity.class);
-                                intent.putExtra("container_id", mContainer.getIdContainer());
-                                startActivity(intent);
-                                break;
+                            intent.putExtra("container_id", mContainer.getIdContainer());
+                            startActivity(intent);
+                            break;
                         case 1: final AlertDialog.Builder dialogConfirma = new AlertDialog.Builder(getActivity());
                             dialogConfirma.setTitle("Deseja mesmo excluir esse contêiner?");
                             dialogConfirma.setMessage("As obras nesse contêiner não serão removidas.");
-                                dialogConfirma.setPositiveButton("Sim", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        mAdapter.remover(getAdapterPosition());
-                                    }
-                                });
-                                dialogConfirma.setNegativeButton("Não", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        dialog.cancel();
-                                    }
-                                });
-                                dialogConfirma.show();
-                                break;
+                            dialogConfirma.setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    mAdapter.remover(getAdapterPosition());
+                                }
+                            });
+                            dialogConfirma.setNegativeButton("Não", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.cancel();
+                                }
+                            });
+                            dialogConfirma.show();
+                            break;
                     }
                 }
             });
@@ -168,4 +168,3 @@ public class ContainerListFragment extends Fragment {
 
     }
 }
-

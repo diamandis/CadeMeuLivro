@@ -117,7 +117,7 @@ public class MainActivity extends AppCompatActivity {
         switch (tabPosicao){
 
             case 0:
-                intent=new Intent(MainActivity.this, ContainerEditActivity.class);
+                intent=new Intent(MainActivity.this, CadastroPagerActivity.class);
                 startActivity(intent);
 
                 break;

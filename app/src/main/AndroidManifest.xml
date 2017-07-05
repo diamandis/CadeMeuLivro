@@ -41,7 +41,8 @@
         <activity android:name=".activity.resultados.ResultadoPesquisaActivity" android:screenOrientation="portrait"/>
         <activity android:name=".activity.resultados.ResultadoScannerActivity" android:screenOrientation="portrait" />
         <activity android:name=".activity.tag.ObrasComATagActivity" android:screenOrientation="portrait"/>
-
+        <activity android:name=".activity.container.CadastroPagerActivity" android:screenOrientation="portrait">
+        </activity>
         <receiver android:name=".util.classes.AlarmReceiver" />
     </application>
 
