@@ -3,7 +3,6 @@ package br.com.senac.cademeulivro.dao;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-
 import java.util.ArrayList;
 import java.util.List;
 

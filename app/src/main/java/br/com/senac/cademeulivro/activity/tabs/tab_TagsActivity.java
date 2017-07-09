@@ -21,9 +21,7 @@ import br.com.senac.cademeulivro.activity.tag.TagEditActivity;
 import br.com.senac.cademeulivro.dao.ObraTagDAO;
 import br.com.senac.cademeulivro.dao.TagDAO;
 import br.com.senac.cademeulivro.helpers.DatabaseHelper;
-import br.com.senac.cademeulivro.model.Obra;
 import br.com.senac.cademeulivro.model.Tag;
-import br.com.senac.cademeulivro.util.adapter.AdapterListViewObra;
 import br.com.senac.cademeulivro.util.adapter.AdapterListViewTag;
 import br.com.senac.cademeulivro.util.constante.Constantes;
 

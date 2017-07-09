@@ -13,8 +13,6 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
-
-
 import java.util.List;
 
 import br.com.senac.cademeulivro.R;

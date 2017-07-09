@@ -27,10 +27,10 @@ import android.widget.Toast;
 
 import br.com.senac.cademeulivro.R;
 import br.com.senac.cademeulivro.activity.container.CadastroPagerActivity;
-import br.com.senac.cademeulivro.activity.tabs.tab_ContainerListFragment;
 import br.com.senac.cademeulivro.activity.obra.ObraDetalhadaEditActivity;
 import br.com.senac.cademeulivro.activity.resultados.ResultadoPesquisaActivity;
 import br.com.senac.cademeulivro.activity.resultados.ResultadoScannerActivity;
+import br.com.senac.cademeulivro.activity.tabs.tab_ContainerListFragment;
 import br.com.senac.cademeulivro.activity.tabs.tab_ObrasActivity;
 import br.com.senac.cademeulivro.activity.tabs.tab_RecomendadosActivity;
 import br.com.senac.cademeulivro.activity.tabs.tab_TagsActivity;

@@ -51,9 +51,9 @@
     <string name="dialog_text">Receber notificações</string>
 
     <string name="requisicao">Iniciando requisição</string>
-    <string name="codigo_invalido">Este código não é válido!</string>
+    <string name="codigo_invalido">Nenhum resultado encontrado! O código está correto?</string>
     <string name="erro_requisicao">Erro ao realizar a requisição, verifique sua conexão!</string>
-    <string name="leitor">Baixe o leitor de qr code para utilizar esta funcionalidade!</string>
+    <string name="leitor">Baixe o leitor de QR Code para utilizar esta funcionalidade!</string>
     <string name="adicionar_tag">Adicionar Tag</string>
     <string name="adicionar_container">Adicionar Container</string>
     <string name="ok">Ok</string>

@@ -1,6 +1,5 @@
 package br.com.senac.cademeulivro.activity.container;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;

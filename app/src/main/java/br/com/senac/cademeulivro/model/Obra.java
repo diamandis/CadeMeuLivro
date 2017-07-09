@@ -3,7 +3,6 @@ package br.com.senac.cademeulivro.model;
 import android.graphics.Bitmap;
 
 import java.io.Serializable;
-import java.util.List;
 
 public class Obra implements Serializable{
     private Integer idObra;
@@ -16,6 +15,15 @@ public class Obra implements Serializable{
     private int anoPublicacao;
     private String isbn;
     private Container container;
+    private String capaUrl;
+
+    public String getCapaUrl() {
+        return capaUrl;
+    }
+
+    public void setCapaUrl(String capaUrl) {
+        this.capaUrl = capaUrl;
+    }
 
     public Container getContainer() {
         return container;
