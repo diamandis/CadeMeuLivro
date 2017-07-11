@@ -1,11 +1,17 @@
 package br.com.senac.cademeulivro.activity.container;
 
+import android.app.AlarmManager;
+import android.app.Notification;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -16,8 +22,10 @@ import android.widget.Toast;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import br.com.senac.cademeulivro.R;
 import br.com.senac.cademeulivro.dao.ContainerDAO;
@@ -27,7 +35,7 @@ import br.com.senac.cademeulivro.model.Container;
 import br.com.senac.cademeulivro.model.ContainerTipos;
 import br.com.senac.cademeulivro.util.DatePickerFragment;
 import br.com.senac.cademeulivro.util.classes.AlarmReceiver;
-import br.com.senac.cademeulivro.util.classes.GerenciadorDeNotificacoes;
+import br.com.senac.cademeulivro.util.constante.Constantes;
 
 public class CadastroPagerActivity extends AppCompatActivity {
 
@@ -40,6 +48,7 @@ public class CadastroPagerActivity extends AppCompatActivity {
     private Integer id;
     private Date date;
     private DateFormat df;
+    private Intent notificationIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,14 +132,41 @@ public class CadastroPagerActivity extends AppCompatActivity {
         if(result > 0) {
 
             //criando notification
-            GerenciadorDeNotificacoes notificacoes= new GerenciadorDeNotificacoes(CadastroPagerActivity.this,
-                    new Intent(CadastroPagerActivity.this, AlarmReceiver.class), novoContainer.getNomeContainer());
+            notificationIntent = new Intent(this, AlarmReceiver.class);
+            scheduleNotification(getNotification(getString(R.string.notificacao_manutencao), novoContainer.getNomeContainer()));
 
-            notificacoes.criarNotification((int) result);
             finish();
         } else {
             Toast.makeText(this,"Erro", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void scheduleNotification(Notification notification){
+
+        notificationIntent.putExtra(AlarmReceiver.NOTIFICATION_ID, AlarmReceiver.NOTIFICATION_ID_VALUE);
+        notificationIntent.putExtra(AlarmReceiver.NOTIFICATION, notification);
+        notificationIntent.putExtra("action", Constantes.BROADCAST_NOTIFICAR);
+
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this,
+                Constantes.BROADCAST_NOTIFICAR,
+                notificationIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+
+        long intervalo = SystemClock.elapsedRealtime() + TimeUnit.DAYS.toMillis(30);
+        AlarmManager alarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        alarm.set(AlarmManager.ELAPSED_REALTIME, intervalo, pendingIntent);
+    }
+
+    private Notification getNotification(String conteudo, String nomeContainer){
+
+        NotificationCompat.Builder notificacao = new NotificationCompat.Builder(this);
+        notificacao.setContentTitle(nomeContainer);
+        notificacao.setContentText(conteudo);
+        notificacao.setSmallIcon(R.mipmap.ic_logo);
+        notificacao.setVibrate(new long[]{1000});
+
+        notificacao.setAutoCancel(true);
+        return notificacao.build();
     }
 
 }

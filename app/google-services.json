@@ -13,21 +13,29 @@
       },
       "oauth_client": [
         {
-          "client_id": "943431053157-8o3kd4m0p1skeb7h9fd9vn3atm8tnncf.apps.googleusercontent.com",
+          "client_id": "943431053157-tni45nm9pjgb992006989upvr62u6rhn.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "br.com.senac.cademeulivro",
+            "certificate_hash": "ba47b858cf1c328b1d439f668681d5ce9f438302"
+          }
+        },
+        {
+          "client_id": "943431053157-u6a083n7n858eqk49qmhqnug0oi95l99.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "943431053157-tdanlick9f6hg62oq1qp0luetmi0d1rf.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "br.com.senac.cademeulivro",
             "certificate_hash": "64c59f87d8d180d5ad7c0be37cc137e2cd1579df"
           }
-        },
-        {
-          "client_id": "943431053157-g7qhveqam3t4ck9a6198jccq8rop7rtb.apps.googleusercontent.com",
-          "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyD2OSuO_66ZV-dlxVrq2OTtsRNGY1dq-fI"
+          "current_key": "AIzaSyCm_-r1qcXRlb5urm36-X5QsQ2Ks-1bNVs"
         }
       ],
       "services": {
