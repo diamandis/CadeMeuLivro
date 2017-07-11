@@ -94,13 +94,7 @@ public class ObraTagDAO {
         o.setIdObra(cursor.getInt(cursor.getColumnIndex("_id")));
         o.setAutor(cursor.getString(cursor.getColumnIndex("autor")));
         o.setEditora(cursor.getString(cursor.getColumnIndex("editora")));
-
-        if (cursor.getBlob(cursor.getColumnIndex("capa"))!=null) {
-            //o.setCapa(ImageConverter.toBitmap(cursor.getBlob(cursor.getColumnIndex("capa"))));
-        }else {
-            o.setCapa(null);
-        }
-
+        o.setIdBitmap(cursor.getInt(cursor.getColumnIndex("capa_id")));
         o.setDescricao(cursor.getString(cursor.getColumnIndex("descricao")));
         o.setAnoPublicacao(cursor.getInt(cursor.getColumnIndex("anoPublicacao")));
         o.setEmprestado(cursor.getInt(cursor.getColumnIndex("emprestado")) == 1);

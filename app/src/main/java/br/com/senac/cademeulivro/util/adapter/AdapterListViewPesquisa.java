@@ -5,12 +5,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.List;
 
 import br.com.senac.cademeulivro.R;
 import br.com.senac.cademeulivro.model.Obra;
+import br.com.senac.cademeulivro.util.classes.ImageUtils;
 
 /**
  * Created by joaos on 03/07/2017.
@@ -20,8 +22,10 @@ public class AdapterListViewPesquisa extends BaseAdapter {
 
     private LayoutInflater inflater;
     private List<Obra> itens;
+    private Context context;
 
     public AdapterListViewPesquisa(Context context, List<Obra> itens) {
+        this.context = context;
         this.itens = itens;
         inflater = LayoutInflater.from(context);
     }
@@ -60,13 +64,13 @@ public class AdapterListViewPesquisa extends BaseAdapter {
         TextView titulo = (TextView) view.findViewById(R.id.TextViewTituloLista);
         TextView autor = (TextView) view.findViewById(R.id.TextViewAutorLista);
         TextView editora = (TextView) view.findViewById(R.id.TextViewEditoraLista);
-        //ImageView capa=(ImageView) view.findViewById(R.id.ImageViewCapaLista);
+        ImageView capa=(ImageView) view.findViewById(R.id.ImageViewCapaLista);
 
 
         titulo.setText((item.getTitulo() != null && item.getTitulo().length() > 20) ? item.getTitulo().substring(0, 20) + "..." : item.getTitulo());
         autor.setText((item.getAutor() != null && item.getAutor().length() > 20) ? item.getAutor().substring(0, 20) + "..." : item.getAutor());
         editora.setText((item.getEditora() != null && item.getEditora().length() > 20) ? item.getEditora().substring(0, 20) + "..." : item.getEditora());
-        //capa.setImageBitmap(item.getCapa());
+        ImageUtils.loadCapa(item.getCapaUrl(),context,capa);
 
         return view;
     }

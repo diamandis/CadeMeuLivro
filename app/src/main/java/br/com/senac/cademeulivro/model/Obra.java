@@ -8,7 +8,6 @@ public class Obra implements Serializable{
     private Integer idObra;
     private String autor;
     private String editora;
-    private Bitmap capa;
     private boolean emprestado;
     private String titulo;
     private String descricao;
@@ -16,6 +15,7 @@ public class Obra implements Serializable{
     private String isbn;
     private Container container;
     private String capaUrl;
+    private Integer idBitmap;
 
     public String getCapaUrl() {
         return capaUrl;
@@ -97,11 +97,11 @@ public class Obra implements Serializable{
         this.anoPublicacao = anoPublicacao;
     }
 
-    public Bitmap getCapa() {
-        return capa;
+    public Integer getIdBitmap() {
+        return idBitmap;
     }
 
-    public void setCapa(Bitmap capa) {
-        this.capa = capa;
+    public void setIdBitmap(Integer idBitmap) {
+        this.idBitmap = idBitmap;
     }
 }

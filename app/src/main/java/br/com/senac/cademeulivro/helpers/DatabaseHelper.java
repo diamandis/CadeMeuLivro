@@ -48,8 +48,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             db.insert("ContainerTipos",null, contentValues);
         }
 
+        //cria tabela Capas (p/ evitar os rolos com Parcelable
+        db.execSQL("CREATE TABLE Capa(_id INTEGER PRIMARY KEY, capa BLOB);");
+
         //cria tabela Obra
-        db.execSQL("CREATE TABLE Obra(_id INTEGER PRIMARY KEY, autor TEXT, titulo TEXT, editora TEXT, emprestado INTEGER, capa BLOB, isbn TEXT, descricao TEXT, anoPublicacao INTEGER, container_id INTEGER, FOREIGN KEY(container_id) REFERENCES Container(_id));");
+        db.execSQL("CREATE TABLE Obra(_id INTEGER PRIMARY KEY, capaUrl TEXT, autor TEXT, titulo TEXT, editora TEXT, emprestado INTEGER, isbn TEXT, descricao TEXT, anoPublicacao INTEGER, container_id INTEGER, capa_id INTEGER, FOREIGN KEY(capa_id) REFERENCES Capa(_id),FOREIGN KEY(container_id) REFERENCES Container(_id));");
 
         //cria tabela Tag
         db.execSQL("CREATE TABLE Tag(_id INTEGER PRIMARY KEY, nomeTag TEXT, corHex TEXT, totalUsos INTEGER);");
@@ -61,7 +64,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
     }
 
     public static SQLiteDatabase newInstance(Context context) {

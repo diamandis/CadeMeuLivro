@@ -67,8 +67,6 @@ public class ObrasComATagActivity extends AppCompatActivity {
                 obra = (Obra)adapter.getItem(position);
 
                 Intent intent = new Intent(ObrasComATagActivity.this, ObraDetalhadaActivity.class);
-                intent.putExtra("capa",obra.getCapa());
-                obra.setCapa(null);
                 intent.putExtra("obra",obra);
                 startActivity(intent);
 

@@ -8,8 +8,11 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
 import br.com.senac.cademeulivro.R;
 import br.com.senac.cademeulivro.model.ContainerTipos;
+import br.com.senac.cademeulivro.util.classes.ImageUtils;
 
 /**
  * Created by Didi on 5/23/2017.

@@ -99,9 +99,6 @@ public class ResultadoPesquisaActivity extends AppCompatActivity {
                 Obra obra = (Obra) adapter.getItem(position);
 
                 Intent intent = new Intent(ResultadoPesquisaActivity.this, ObraDetalhadaActivity.class);
-                //imagem irá bugar se for com o objeto
-                intent.putExtra("capa",obra.getCapa());
-                obra.setCapa(null);
                 intent.putExtra("obra",obra);
                 startActivity(intent);
             }

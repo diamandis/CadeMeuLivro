@@ -13,6 +13,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
 import java.util.List;
 
 import br.com.senac.cademeulivro.R;
@@ -20,6 +22,7 @@ import br.com.senac.cademeulivro.dao.ObraTagDAO;
 import br.com.senac.cademeulivro.helpers.DatabaseHelper;
 import br.com.senac.cademeulivro.model.Obra;
 import br.com.senac.cademeulivro.model.Tag;
+import br.com.senac.cademeulivro.util.classes.ImageUtils;
 import br.com.senac.cademeulivro.util.constante.Constantes;
 
 
@@ -27,7 +30,7 @@ public class ObraDetalhadaActivity extends AppCompatActivity {
 
     private Obra obra;
     private ImageView capa;
-    private TextView tvTitulo, tvEditora, tvAutor, tvIsbn, tvAno, tvDescricao, TextViewConteinerObra;
+    private TextView tvTitulo, tvEditora, tvAutor, tvIsbn, tvAno, tvDescricao, tvContainerObra;
     private CheckBox emprestado;
     private Button botaoConcluir;
     private LinearLayout layoutTagsDetalhada;
@@ -53,20 +56,24 @@ public class ObraDetalhadaActivity extends AppCompatActivity {
         capa= (ImageView) findViewById(R.id.ImageViewCapaObra);
         botaoConcluir= (Button) findViewById(R.id.ButtonEditarObra);
         layoutTagsDetalhada= (LinearLayout) findViewById(R.id.layoutTagsDetalhada);
-        TextViewConteinerObra = (TextView) findViewById(R.id.TextViewConteinerObra);
+        tvContainerObra = (TextView) findViewById(R.id.TextViewConteinerObra);
 
         Bundle parametros = getIntent().getExtras();
-        mDatabase = new DatabaseHelper(getApplicationContext()).getWritableDatabase();
+        mDatabase = DatabaseHelper.newInstance(getApplicationContext());
         obraTagDAO= new ObraTagDAO(mDatabase);
 
         if (parametros!=null) {
             obra = (Obra) parametros.getSerializable("obra");
             tags=obraTagDAO.getByIdObra(obra.getIdObra());
 
-            imagem=(Bitmap) parametros.getParcelable("capa");
+            /*
+            imagem= parametros.getParcelable("capa");
             capa.setImageBitmap(imagem);
             capa.setScaleX(1.5F);
             capa.setScaleY(1.5F);
+            */
+
+            ImageUtils.loadCapa(obra.getCapaUrl(),this,capa);
 
             preencheCampos(obra);
 
@@ -97,14 +104,11 @@ public class ObraDetalhadaActivity extends AppCompatActivity {
     }
 
     public void obraDetalhadaEditar(View v) {
-
         Intent intent=new Intent(this, ObraDetalhadaEditActivity.class);
+        //intent.putExtra("capa",imagem);
 
-        intent.putExtra("capa",imagem);
-
-        obra.setCapa(null);
+        //obra.setCapa(null);
         intent.putExtra("obra",obra);
-
         startActivityForResult(intent, Constantes.CLOSE_REQUEST);
         //TODO fazer finish no activity for result
     }

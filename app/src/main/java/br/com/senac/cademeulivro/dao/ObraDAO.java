@@ -7,7 +7,9 @@ import android.database.sqlite.SQLiteDatabase;
 import java.util.ArrayList;
 import java.util.List;
 
+import br.com.senac.cademeulivro.model.Container;
 import br.com.senac.cademeulivro.model.Obra;
+import br.com.senac.cademeulivro.util.classes.ImageUtils;
 
 
 public class ObraDAO {
@@ -87,14 +89,17 @@ public class ObraDAO {
         content.put("anoPublicacao", o.getAnoPublicacao());
         content.put("emprestado", o.isEmprestado());
         content.put("isbn", o.getIsbn());
-        //content.put("container_id", o.getContainer().getIdContainer());
+        content.put("capaUrl", o.getCapaUrl());
+        content.put("capa_id", o.getIdBitmap());
 
+        //content.put("container_id", o.getContainer().getIdContainer());
+        /*
         if (o.getCapa()!=null) {
-            //content.put("capa",ImageConverter.toByteArray(o.getCapa()));
+            //content.put("capa",ImageUtils.toByteArray(o.getCapa()));
         } else {
             content.put("capa", (byte[]) null);
         }
-
+*/
         return content;
     }
 
@@ -105,13 +110,15 @@ public class ObraDAO {
         o.setIdObra(cursor.getInt(cursor.getColumnIndex("_id")));
         o.setAutor(cursor.getString(cursor.getColumnIndex("autor")));
         o.setEditora(cursor.getString(cursor.getColumnIndex("editora")));
-
+        o.setIdBitmap(cursor.getInt(cursor.getColumnIndex("capa_id")));
+        o.setCapaUrl(cursor.getString(cursor.getColumnIndex("capaUrl")));
+/*
         if (cursor.getBlob(cursor.getColumnIndex("capa"))!=null) {
-            //o.setCapa(ImageConverter.toBitmap(cursor.getBlob(cursor.getColumnIndex("capa"))));
+            //o.setCapa(ImageUtils.toBitmap(cursor.getBlob(cursor.getColumnIndex("capa"))));
         }else {
             o.setCapa(null);
         }
-
+*/
         o.setDescricao(cursor.getString(cursor.getColumnIndex("descricao")));
         o.setAnoPublicacao(cursor.getInt(cursor.getColumnIndex("anoPublicacao")));
         o.setEmprestado(cursor.getInt(cursor.getColumnIndex("emprestado")) == 1);
@@ -120,5 +127,4 @@ public class ObraDAO {
 
         return o;
     }
-
 }

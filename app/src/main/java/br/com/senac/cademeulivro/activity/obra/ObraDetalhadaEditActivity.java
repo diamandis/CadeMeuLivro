@@ -3,15 +3,16 @@ package br.com.senac.cademeulivro.activity.obra;
 import android.app.Dialog;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutCompat;
 import android.view.View;
@@ -33,16 +34,19 @@ import java.util.Date;
 import java.util.List;
 
 import br.com.senac.cademeulivro.R;
+import br.com.senac.cademeulivro.dao.BitmapDAO;
 import br.com.senac.cademeulivro.dao.ContainerDAO;
 import br.com.senac.cademeulivro.dao.ObraDAO;
 import br.com.senac.cademeulivro.dao.ObraTagDAO;
 import br.com.senac.cademeulivro.dao.TagDAO;
 import br.com.senac.cademeulivro.helpers.DatabaseHelper;
+import br.com.senac.cademeulivro.model.BitmapCapa;
 import br.com.senac.cademeulivro.model.Container;
 import br.com.senac.cademeulivro.model.Obra;
 import br.com.senac.cademeulivro.model.Tag;
 import br.com.senac.cademeulivro.util.adapter.AdapterListViewContainerDialog;
 import br.com.senac.cademeulivro.util.adapter.AdapterListViewTagDialog;
+import br.com.senac.cademeulivro.util.classes.ImageUtils;
 import br.com.senac.cademeulivro.util.constante.Constantes;
 
 public class ObraDetalhadaEditActivity extends AppCompatActivity {
@@ -55,7 +59,9 @@ public class ObraDetalhadaEditActivity extends AppCompatActivity {
     private TagDAO tagDao;
     private ObraTagDAO obraTagDAO;
     private ContainerDAO containerDAO;
+    private BitmapDAO bitmapDAO;
     private SQLiteDatabase mDatabase;
+    private File capaFoto;
 
     private EditText editTitulo, editAutor, editEditora, editDescricao, editISBN, editAnoPublicacao;
     private CheckBox emprestado;
@@ -66,8 +72,8 @@ public class ObraDetalhadaEditActivity extends AppCompatActivity {
     private AdapterListViewContainerDialog adapterContainer;
 
     private Obra obra;
-    private Bitmap foto=null;
-    private String pictureImagePath = "";
+    private BitmapCapa capa;
+    private Bitmap foto;
 
     private List<Tag> tags;
 
@@ -89,21 +95,64 @@ public class ObraDetalhadaEditActivity extends AppCompatActivity {
         TextViewContainer = (TextView) findViewById(R.id.TextViewContainer);
 
         Bundle parametros=getIntent().getExtras();
-        mDatabase = new DatabaseHelper(getApplicationContext()).getWritableDatabase();
+        mDatabase = DatabaseHelper.newInstance(getApplicationContext());
         obraDao = new ObraDAO(mDatabase);
         tagDao = new TagDAO(mDatabase);
         obraTagDAO = new ObraTagDAO(mDatabase);
         containerDAO = new ContainerDAO(mDatabase);
+        bitmapDAO = new BitmapDAO(mDatabase);
 
         if(parametros!=null) {
             obra= (Obra) parametros.getSerializable("obra");
-
             tags=obraTagDAO.getByIdObra(obra.getIdObra());
+            if(obra.getCapaUrl() != null) {
+                ImageUtils.loadCapa(obra.getCapaUrl(), this, imgCapa);
+            } else if (obra.getIdBitmap() != null) {
+                capa = bitmapDAO.getById(obra.getIdBitmap());
+                imgCapa.setImageBitmap(capa.getCapa());
+            } else {
+                imgCapa.setImageResource(R.mipmap.ic_camera_add);
+                imgCapa.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        //bater foto
+                        Intent captura = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                        capaFoto = new File(getFilesDir(), "IMG_"+editTitulo.getText().toString()+".jpg");
+                        Uri uri = FileProvider.getUriForFile(ObraDetalhadaEditActivity.this,"br.com.senac.cademeulivro.fileprovider",capaFoto);
+                        captura.putExtra(MediaStore.EXTRA_OUTPUT,uri);
 
-            foto=parametros.getParcelable("capa");
-            obra.setCapa(foto);
+                        List<ResolveInfo> cameraActivities = getPackageManager().queryIntentActivities(captura, PackageManager.MATCH_DEFAULT_ONLY);
+
+                        for(ResolveInfo actv : cameraActivities) {
+                            grantUriPermission(actv.activityInfo.packageName,uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                        }
+
+                        startActivityForResult(captura, Constantes.CAMERA_REQUEST);
+                    }
+                });
+            }
             preencheCampos(obra);
             setTitle("Editar");
+        } else {
+            imgCapa.setImageResource(R.mipmap.ic_camera_add);
+            imgCapa.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //bater foto
+                    Intent captura = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    capaFoto = new File(getFilesDir(), "IMG_"+editTitulo.getText().toString()+".jpg");
+                    Uri uri = FileProvider.getUriForFile(ObraDetalhadaEditActivity.this,"br.com.senac.cademeulivro.fileprovider",capaFoto);
+                    captura.putExtra(MediaStore.EXTRA_OUTPUT,uri);
+
+                    List<ResolveInfo> cameraActivities = getPackageManager().queryIntentActivities(captura, PackageManager.MATCH_DEFAULT_ONLY);
+
+                    for(ResolveInfo actv : cameraActivities) {
+                        grantUriPermission(actv.activityInfo.packageName,uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                    }
+
+                    startActivityForResult(captura, Constantes.CAMERA_REQUEST);
+                }
+            });
         }
 
         if(tags!=null && tags.size()!=0) {
@@ -164,15 +213,14 @@ public class ObraDetalhadaEditActivity extends AppCompatActivity {
         });
     }
 
-    public void scannerIsbn (View v){
 
+    public void scannerIsbn (View v){
         try {
             //instanciando scanner
             Intent intent = new Intent("com.google.zxing.client.android.SCAN");
             intent.putExtra("SCAN_MODE", "PRODUCT_MODE");
             startActivityForResult(intent, Constantes.SCANNER_REQUEST);
         } catch (ActivityNotFoundException e) {
-
             Toast.makeText(this, R.string.leitor, Toast.LENGTH_SHORT).show();
             Uri uri = Uri.parse("market://search?q=pname:" + "com.google.zxing.client.android");
             Intent intent = new Intent(Intent.ACTION_VIEW, uri);
@@ -181,9 +229,8 @@ public class ObraDetalhadaEditActivity extends AppCompatActivity {
     }
 
     public void concluirEditObra (View v){
-
-        if(obra==null){
-            obra=new Obra();
+        if(obra==null) {
+            obra = new Obra();
         }
 
         obra.setTitulo(editTitulo.getText().toString());
@@ -193,68 +240,54 @@ public class ObraDetalhadaEditActivity extends AppCompatActivity {
         obra.setEditora(editEditora.getText().toString());
         obra.setEmprestado(emprestado.isChecked());
         obra.setIsbn(editISBN.getText().toString());
-        obra.setCapa(foto);
 
+        long resultBmp = 0;
+        if(obra.getCapaUrl() == null) {
+            resultBmp = bitmapDAO.insert(new BitmapCapa(foto));
+        } else {
+            imgCapa.setDrawingCacheEnabled(true);
+            resultBmp = bitmapDAO.insert(new BitmapCapa(imgCapa.getDrawingCache()));
+        }
+
+        obra.setIdBitmap((int)resultBmp);
         /*if(TextViewContainer.getTag()!=null){
             obra.setContainer(containerDAO.getById((Integer) TextViewContainer.getTag()));
         }*/
 
         if(obra.getIdObra()!=null){
             obraDao.update(obra);
-
             int childCount = layoutTags.getChildCount();
-
             for (int k = 0; k < tags.size(); k++) {
-
                 obraTagDAO.delete(obra.getIdObra(), tags.get(k).getIdTag());
             }
 
             for (int i = 0; i < childCount; i++) {
                 View viewTag = layoutTags.getChildAt(i);
-
                 obraTagDAO.insert(obra.getIdObra(), (int) viewTag.getTag());
             }
 
-        }else {
+        } else {
             long idObra=obraDao.insert(obra);
-
             int childCount = layoutTags.getChildCount();
             for (int i = 0; i < childCount; i++) {
                 View viewTag = layoutTags.getChildAt(i);
-
                 obraTagDAO.insert((int)idObra,(int)viewTag.getTag());
             }
         }
 
-        Intent returnIntent = new Intent();
-        setResult(RESULT_OK,returnIntent);
         finish();
     }
 
     public void cancelarEditObra(View v){ finish();}
 
-    public void adcFoto(View v){
-
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = timeStamp + ".jpg";
-        File storageDir = Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES);
-        pictureImagePath = storageDir.getAbsolutePath() + "/" + imageFileName;
-        File file = new File(pictureImagePath);
-        Uri outputFileUri = Uri.fromFile(file);
-        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, outputFileUri);
-        startActivityForResult(cameraIntent, Constantes.CAMERA_REQUEST);
-
-        //instanciando camera
-        /*
-        Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-        startActivityForResult(cameraIntent, Constantes.CAMERA_REQUEST);
-        */
+    public void updateFoto() {
+        if(capaFoto != null || capaFoto.exists()) {
+            foto = ImageUtils.getBitmapReduzido(capaFoto.getPath(),this);
+            imgCapa.setImageBitmap(foto);
+        }
     }
 
     public void adicionarContainers(View v) {
-
         final Dialog dialog= new Dialog(ObraDetalhadaEditActivity.this);
         dialog.setTitle(getString(R.string.adicionar_container));
         dialog.setContentView(R.layout.h_custom_dialog_lista);
@@ -278,7 +311,6 @@ public class ObraDetalhadaEditActivity extends AppCompatActivity {
     }
 
     public void adicionarTags(View v) {
-
         final Dialog dialog= new Dialog(ObraDetalhadaEditActivity.this);
         dialog.setTitle(getString(R.string.adicionar_tag));
         dialog.setContentView(R.layout.h_custom_dialog_lista);
@@ -322,34 +354,11 @@ public class ObraDetalhadaEditActivity extends AppCompatActivity {
             case Constantes.CAMERA_REQUEST:
 
                 if (resultCode == RESULT_OK) {
+                    Uri uri = FileProvider.getUriForFile(this, "br.com.senac.cademeulivro.fileprovider",capaFoto);
 
-                    //setando imageview com a imagem pega pela camera
-                    /*
-                    Bitmap photo = (Bitmap) data.getExtras().get("data");
-                    imgCapa.setImageBitmap(photo);
-                    */
-
-                    File imgFile = new  File(pictureImagePath);
-
-                    if(imgFile.exists()) {
-                        foto = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
-
-                        Matrix matrix = new Matrix();
-                        matrix.postRotate(90);
-                        foto=Bitmap.createBitmap(foto, 0, 0, foto.getWidth(), foto.getHeight(), matrix, true);
-
-                        imgCapa.setImageBitmap(foto);
-                        imgCapa.setScaleX(2);
-                        imgCapa.setScaleY(2);
-                    }
-
-                    Toast.makeText(this, "Ação realizada com sucesso!", Toast.LENGTH_SHORT).show();
-
-                }else {
-                    Toast.makeText(this, "Falha ao realizar esta ação!", Toast.LENGTH_SHORT).show();
+                    revokeUriPermission(uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                    updateFoto();
                 }
-                break;
-
         }
     }
 
@@ -414,9 +423,6 @@ public class ObraDetalhadaEditActivity extends AppCompatActivity {
         editEditora.setText(obra.getEditora());
         editDescricao.setText(obra.getDescricao());
         emprestado.setChecked(obra.isEmprestado());
-        imgCapa.setImageBitmap(obra.getCapa());
-        imgCapa.setScaleX(1.5F);
-        imgCapa.setScaleY(1.5F);
 
         if(obra.getContainer()!=null){
             TextViewContainer.setText(obra.getContainer().getNomeContainer());

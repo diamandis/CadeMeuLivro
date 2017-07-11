@@ -2,7 +2,6 @@ package br.com.senac.cademeulivro.activity.resultados;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -21,12 +20,15 @@ import java.util.List;
 
 import br.com.senac.cademeulivro.R;
 import br.com.senac.cademeulivro.activity.obra.ObraDetalhadaActivity;
+import br.com.senac.cademeulivro.activity.obra.ObraDetalhadaEditActivity;
 import br.com.senac.cademeulivro.model.Obra;
 import br.com.senac.cademeulivro.util.classes.ISBNScanner;
+import br.com.senac.cademeulivro.util.classes.ImageUtils;
 
 public class ResultadoScannerActivity extends AppCompatActivity {
     private RecyclerView mRecyclerView;
     private List<Obra> lista;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +40,6 @@ public class ResultadoScannerActivity extends AppCompatActivity {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         String isbn = getIntent().getStringExtra("isbn");
-        //new FetchObrasTask().execute("9788575224540");
         new FetchObrasTask().execute(isbn);
 
     }
@@ -59,12 +60,7 @@ public class ResultadoScannerActivity extends AppCompatActivity {
 
         public void bind(Obra o) {
             mObra = o;
-            Picasso.with(ResultadoScannerActivity.this)
-                    .load(mObra.getCapaUrl())
-                    .placeholder(R.drawable.placeholder)
-                    .into(capa);
-            Bitmap bitmap = ((BitmapDrawable)capa.getDrawable()).getBitmap();
-            mObra.setCapa(bitmap);
+            ImageUtils.loadCapa(mObra.getCapaUrl(),ResultadoScannerActivity.this,capa);
             titulo.setText(mObra.getTitulo());
             autor.setText(mObra.getAutor());
             editora.setText(mObra.getEditora());
@@ -72,7 +68,8 @@ public class ResultadoScannerActivity extends AppCompatActivity {
 
         @Override
         public void onClick(View v) {
-            Intent intent = new Intent(ResultadoScannerActivity.this, ObraDetalhadaActivity.class);
+            Intent intent = new Intent(ResultadoScannerActivity.this, ObraDetalhadaEditActivity.class);
+            //Intent intent = new Intent(ResultadoScannerActivity.this, ObraDetalhadaActivity.class);
             intent.putExtra("obra",mObra);
             startActivity(intent);
         }
@@ -115,7 +112,7 @@ public class ResultadoScannerActivity extends AppCompatActivity {
 
         @Override
         protected List<Obra> doInBackground(String... params) {
-            return new ISBNScanner(ResultadoScannerActivity.this).fetch(params[0]);
+            return new ISBNScanner().fetch(params[0]);
         }
 
         @Override

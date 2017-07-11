@@ -87,9 +87,8 @@ public class ResultadoPesquisa {
 
                         //pegando capa do livro
                         if(!volumeObject.isNull("imageLinks")){
-
                             JSONObject imageInfo = volumeObject.getJSONObject("imageLinks");
-                            new ResultadoPesquisa.GetBookThumb().execute(imageInfo.getString("smallThumbnail")).get();
+                            obra.setCapaUrl(imageInfo.getString("smallThumbnail"));
                         }
 
                         if(!volumeObject.isNull("authors")){
@@ -134,10 +133,6 @@ public class ResultadoPesquisa {
                 } catch (RuntimeException r ) {
                     r.printStackTrace();
                     Toast.makeText(activityForToast, R.string.erro_requisicao, Toast.LENGTH_SHORT).show();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
                 }
             }
 
@@ -154,7 +149,7 @@ public class ResultadoPesquisa {
 
         return obrasEncontradas;
     }
-    //Requisição HTTP Asyncrona
+/*    //Requisição HTTP Asyncrona
 
 
     private class GetBookThumb extends AsyncTask<String, Void, String> {
@@ -175,7 +170,7 @@ public class ResultadoPesquisa {
                 InputStream thumbIn = thumbConn.getInputStream();
                 BufferedInputStream thumbBuff = new BufferedInputStream(thumbIn);
                 thumbImg = BitmapFactory.decodeStream(thumbBuff);
-                obra.setCapa(thumbImg);
+                //obra.setCapa(thumbImg);
 
                 thumbBuff.close();
                 thumbIn.close();
@@ -188,5 +183,5 @@ public class ResultadoPesquisa {
         }
         protected void onPostExecute(String result) {
         }
-    }
+    }*/
 }

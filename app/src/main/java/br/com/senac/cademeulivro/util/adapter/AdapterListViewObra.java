@@ -8,20 +8,26 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
 import java.util.List;
 
 import br.com.senac.cademeulivro.R;
+import br.com.senac.cademeulivro.dao.BitmapDAO;
+import br.com.senac.cademeulivro.helpers.DatabaseHelper;
 import br.com.senac.cademeulivro.model.Obra;
+import br.com.senac.cademeulivro.util.classes.ImageUtils;
 
 
 public class AdapterListViewObra extends BaseAdapter {
 
     private LayoutInflater inflater;
     private List<Obra> itens;
+    private Context context;
 
 
     public AdapterListViewObra(Context context, List<Obra> itens) {
-
+        this.context = context;
         this.itens = itens;
         inflater=LayoutInflater.from(context);
     }
@@ -65,7 +71,14 @@ public class AdapterListViewObra extends BaseAdapter {
         titulo.setText((item.getTitulo()!=null && item.getTitulo().length()>20) ? item.getTitulo().substring(0,20)+"..." : item.getTitulo());
         autor.setText((item.getAutor()!=null && item.getAutor().length()>20) ? item.getAutor().substring(0,20)+"..." : item.getAutor());
         editora.setText((item.getEditora()!=null && item.getEditora().length()>20) ? item.getEditora().substring(0,20)+"..." : item.getEditora());
-        capa.setImageBitmap(item.getCapa());
+        if(item.getCapaUrl() != null) {
+            ImageUtils.loadCapa(item.getCapaUrl(),context,capa);
+        } else if (item.getIdBitmap() != null){
+            BitmapDAO dao = new BitmapDAO(DatabaseHelper.newInstance(context));
+            capa.setImageBitmap(dao.getById(item.getIdBitmap()).getCapa());
+        } else {
+            capa.setImageResource(R.drawable.placeholder);
+        }
 
         return view;
     }

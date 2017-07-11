@@ -29,8 +29,8 @@ public class ISBNScanner {
     private Obra obra;
     private String ISBN;
 
-    public ISBNScanner(Activity activityForToast) {
-        this.activityForToast = activityForToast;
+    public ISBNScanner() {
+
     }
 
     public byte[] getUrlBytes(String caminho) throws IOException {
@@ -47,7 +47,7 @@ public class ISBNScanner {
 
             int bytesLidos = 0;
             byte[] buffer = new byte[1024];
-            while((bytesLidos = in.read(buffer)) < 0) {
+            while((bytesLidos = in.read(buffer)) > 0) {
                 out.write(buffer,0, bytesLidos);
             }
             out.close();
@@ -65,9 +65,9 @@ public class ISBNScanner {
         this.ISBN = param;
         List<Obra> items = new ArrayList<>();
         try {
-            String url = Uri.parse("https://www.googleapis.com/books/v1/volumes")
+            String url = Uri.parse("https://www.googleapis.com/books/v1")
                     .buildUpon()
-                    .appendQueryParameter("q","isbn:"+ISBN)
+                    .appendEncodedPath("volumes?q=isbn:"+ISBN)
                     .build().toString();
             String jsonString = getUrlString(url);
             JSONObject json = new JSONObject(jsonString);
@@ -82,7 +82,6 @@ public class ISBNScanner {
 
     private void parseItems(List<Obra> items, JSONObject json) throws IOException, JSONException{
         if(json.getInt("totalItems")==0) {
-            Toast.makeText(activityForToast, R.string.codigo_invalido, Toast.LENGTH_SHORT).show();
             return;
         }
         JSONArray bookArray = json.getJSONArray("items");

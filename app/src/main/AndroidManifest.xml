@@ -3,6 +3,8 @@
     package="br.com.senac.cademeulivro">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-feature android:name="android.hardware.camera"
+                  android:required="true"/>
 
     <application
         android:allowBackup="true"
@@ -44,6 +46,15 @@
         <activity android:name=".activity.container.CadastroPagerActivity" android:screenOrientation="portrait">
         </activity>
         <receiver android:name=".util.classes.AlarmReceiver" />
+        <provider
+            android:authorities="br.com.senac.cademeulivro.fileprovider"
+            android:name="android.support.v4.content.FileProvider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/files"/>
+        </provider>
     </application>
 
 </manifest>

@@ -81,9 +81,9 @@ public class tab_ObrasActivity extends Fragment {
 
                 obra = (Obra)adapterListView.getItem(position);
 
-                Intent intent = new Intent(getActivity(), ObraDetalhadaActivity.class);
-                intent.putExtra("capa",obra.getCapa());
-                obra.setCapa(null);
+                Intent intent = new Intent(getActivity(), ObraDetalhadaEditActivity.class);
+                //intent.putExtra("capa",obra.getCapa());
+                //obra.setCapa(null);
                 intent.putExtra("obra",obra);
                 startActivity(intent);
 
@@ -116,8 +116,8 @@ public class tab_ObrasActivity extends Fragment {
                         } else {
                             obraTagDAO.deleteObraFromAll(obra.getIdObra());
                             obraDao.delete(obra.getIdObra());
+                            refresh();
 
-                            //TODO fazer refresh
                             Toast.makeText(getContext(), "Excluído com sucesso", Toast.LENGTH_SHORT).show();
                         }
                         return true;
