@@ -64,7 +64,7 @@ public class GerenciadorDeNotificacoes {
 
         //2592000000 milisegundos - 30dias
         notificationIntent = new Intent(context, AlarmReceiver.class);
-        scheduleNotification(idContainer, getNotification(texto), 2592000000L);
+        scheduleNotification(idContainer, getNotification(texto), 2000);
     }
 
     //id do notification é igual ao o id do container

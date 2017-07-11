@@ -12,6 +12,7 @@ import java.util.List;
 
 import br.com.senac.cademeulivro.R;
 import br.com.senac.cademeulivro.activity.obra.ObraDetalhadaActivity;
+import br.com.senac.cademeulivro.activity.obra.ObraDetalhadaEditActivity;
 import br.com.senac.cademeulivro.dao.ObraDAO;
 import br.com.senac.cademeulivro.helpers.DatabaseHelper;
 import br.com.senac.cademeulivro.model.Obra;
@@ -98,7 +99,7 @@ public class ResultadoPesquisaActivity extends AppCompatActivity {
 
                 Obra obra = (Obra) adapter.getItem(position);
 
-                Intent intent = new Intent(ResultadoPesquisaActivity.this, ObraDetalhadaActivity.class);
+                Intent intent = new Intent(ResultadoPesquisaActivity.this, ObraDetalhadaEditActivity.class);
                 intent.putExtra("obra",obra);
                 startActivity(intent);
             }

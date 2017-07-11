@@ -18,7 +18,6 @@ public class ObraDAO {
 
     public ObraDAO(SQLiteDatabase databaseHelper) {
         mDatabaseHelper = databaseHelper;
-        containerDAO = new ContainerDAO(mDatabaseHelper);
     }
 
     public long insert(Obra o) {
@@ -75,10 +74,6 @@ public class ObraDAO {
         return lista;
     }
 
-
-    //fix metodo numerodeobras -> numeroobras
-    //considerar idcontainer
-
     private ContentValues getContentFrom(Obra o) {
         ContentValues content = new ContentValues();
         content.put("titulo", o.getTitulo());
@@ -91,8 +86,10 @@ public class ObraDAO {
         content.put("isbn", o.getIsbn());
         content.put("capaUrl", o.getCapaUrl());
         content.put("capa_id", o.getIdBitmap());
+        if(o.getContainer() != null){
+            content.put("container_id", o.getContainer().getIdContainer());
+        }
 
-        //content.put("container_id", o.getContainer().getIdContainer());
         /*
         if (o.getCapa()!=null) {
             //content.put("capa",ImageUtils.toByteArray(o.getCapa()));
@@ -123,7 +120,11 @@ public class ObraDAO {
         o.setAnoPublicacao(cursor.getInt(cursor.getColumnIndex("anoPublicacao")));
         o.setEmprestado(cursor.getInt(cursor.getColumnIndex("emprestado")) == 1);
         o.setIsbn(cursor.getString(cursor.getColumnIndex("isbn")));
-        //o.setContainer(containerDAO.getById(cursor.getInt(cursor.getColumnIndex("container_id"))));
+        Integer id = cursor.getInt(cursor.getColumnIndex("container_id"));
+        if(id > 0) {
+            containerDAO = new ContainerDAO(mDatabaseHelper);
+            o.setContainer(containerDAO.getById(id));
+        }
 
         return o;
     }

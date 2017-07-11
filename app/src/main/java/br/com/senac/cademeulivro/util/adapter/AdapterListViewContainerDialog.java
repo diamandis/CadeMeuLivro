@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.List;
@@ -54,14 +55,19 @@ public class AdapterListViewContainerDialog extends BaseAdapter {
         Container item= (Container) itens.get(position);
 
         //Resgatar o layout a ser preenchido
-        view=inflater.inflate(R.layout.c_activity_item_lista_obras,null);
+        view=inflater.inflate(R.layout.c_activity_item_lista_container_dialog,null);
 
+        TextView nomeContainer=(TextView) view.findViewById(R.id.txtNome);
+        nomeContainer.setText(item.getNomeContainer());
+        ImageView imgContainer = (ImageView) view.findViewById(R.id.imgContainer);
+        imgContainer.setImageResource(item.getContainerTipos().getTipoIcone());
+/*
         //Resgatar os dois textviews e o imageview para insercao do conteudo
         TextView nomeContainer=(TextView) view.findViewById(R.id.textViewContainerDialog);
 
         nomeContainer.setText((item.getNomeContainer()!=null && item.getNomeContainer().length()>20) ?
                 item.getNomeContainer().substring(0,20)+"..." : item.getNomeContainer());
-
+*/
         return view;
     }
 }

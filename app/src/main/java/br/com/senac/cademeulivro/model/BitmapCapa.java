@@ -18,6 +18,11 @@ public class BitmapCapa {
         this.capa = capa;
     }
 
+    public BitmapCapa(Bitmap capa, Integer idBitmap) {
+        this.capa = capa;
+        this.idBitmap = idBitmap;
+    }
+
     public Bitmap getCapa() {
         return capa;
     }

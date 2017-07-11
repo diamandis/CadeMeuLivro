@@ -111,6 +111,7 @@ public class tab_TagsActivity extends Fragment {
                         } else {
                             obraTagDAO.deleteTagFromAll(tag.getIdTag());
                             tagDAO.delete(tag.getIdTag());
+                            refresh();
 
                             //obraTagDAO.delete()
                             //itens = tagDAO.getListaTags();

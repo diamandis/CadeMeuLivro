@@ -28,6 +28,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.squareup.picasso.Picasso;
+
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -74,6 +76,7 @@ public class ObraDetalhadaEditActivity extends AppCompatActivity {
     private Obra obra;
     private BitmapCapa capa;
     private Bitmap foto;
+    private Container container;
 
     private List<Tag> tags;
 
@@ -105,54 +108,20 @@ public class ObraDetalhadaEditActivity extends AppCompatActivity {
         if(parametros!=null) {
             obra= (Obra) parametros.getSerializable("obra");
             tags=obraTagDAO.getByIdObra(obra.getIdObra());
-            if(obra.getCapaUrl() != null) {
+            if(obra.getCapaUrl() == null && obra.getIdBitmap() == null) {
+                imgCapa.setImageResource(R.mipmap.ic_camera_add);
+                imgCapa.setOnClickListener(baterFoto());
+            } else if(obra.getCapaUrl() != null) {
                 ImageUtils.loadCapa(obra.getCapaUrl(), this, imgCapa);
-            } else if (obra.getIdBitmap() != null) {
+            } else if(obra.getIdBitmap() != null && obra.getIdBitmap() > 0){
                 capa = bitmapDAO.getById(obra.getIdBitmap());
                 imgCapa.setImageBitmap(capa.getCapa());
-            } else {
-                imgCapa.setImageResource(R.mipmap.ic_camera_add);
-                imgCapa.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        //bater foto
-                        Intent captura = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                        capaFoto = new File(getFilesDir(), "IMG_"+editTitulo.getText().toString()+".jpg");
-                        Uri uri = FileProvider.getUriForFile(ObraDetalhadaEditActivity.this,"br.com.senac.cademeulivro.fileprovider",capaFoto);
-                        captura.putExtra(MediaStore.EXTRA_OUTPUT,uri);
-
-                        List<ResolveInfo> cameraActivities = getPackageManager().queryIntentActivities(captura, PackageManager.MATCH_DEFAULT_ONLY);
-
-                        for(ResolveInfo actv : cameraActivities) {
-                            grantUriPermission(actv.activityInfo.packageName,uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-                        }
-
-                        startActivityForResult(captura, Constantes.CAMERA_REQUEST);
-                    }
-                });
             }
             preencheCampos(obra);
             setTitle("Editar");
         } else {
             imgCapa.setImageResource(R.mipmap.ic_camera_add);
-            imgCapa.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    //bater foto
-                    Intent captura = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    capaFoto = new File(getFilesDir(), "IMG_"+editTitulo.getText().toString()+".jpg");
-                    Uri uri = FileProvider.getUriForFile(ObraDetalhadaEditActivity.this,"br.com.senac.cademeulivro.fileprovider",capaFoto);
-                    captura.putExtra(MediaStore.EXTRA_OUTPUT,uri);
-
-                    List<ResolveInfo> cameraActivities = getPackageManager().queryIntentActivities(captura, PackageManager.MATCH_DEFAULT_ONLY);
-
-                    for(ResolveInfo actv : cameraActivities) {
-                        grantUriPermission(actv.activityInfo.packageName,uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-                    }
-
-                    startActivityForResult(captura, Constantes.CAMERA_REQUEST);
-                }
-            });
+            imgCapa.setOnClickListener(baterFoto());
         }
 
         if(tags!=null && tags.size()!=0) {
@@ -213,6 +182,26 @@ public class ObraDetalhadaEditActivity extends AppCompatActivity {
         });
     }
 
+    public View.OnClickListener baterFoto() {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //bater foto
+                Intent captura = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                capaFoto = new File(getFilesDir(), "IMG_"+editTitulo.getText().toString()+".jpg");
+                Uri uri = FileProvider.getUriForFile(ObraDetalhadaEditActivity.this,"br.com.senac.cademeulivro.fileprovider",capaFoto);
+                captura.putExtra(MediaStore.EXTRA_OUTPUT,uri);
+
+                List<ResolveInfo> cameraActivities = getPackageManager().queryIntentActivities(captura, PackageManager.MATCH_DEFAULT_ONLY);
+
+                for(ResolveInfo actv : cameraActivities) {
+                    grantUriPermission(actv.activityInfo.packageName,uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                }
+
+                startActivityForResult(captura, Constantes.CAMERA_REQUEST);
+            }
+        };
+    }
 
     public void scannerIsbn (View v){
         try {
@@ -241,20 +230,23 @@ public class ObraDetalhadaEditActivity extends AppCompatActivity {
         obra.setEmprestado(emprestado.isChecked());
         obra.setIsbn(editISBN.getText().toString());
 
-        long resultBmp = 0;
-        if(obra.getCapaUrl() == null) {
-            resultBmp = bitmapDAO.insert(new BitmapCapa(foto));
-        } else {
-            imgCapa.setDrawingCacheEnabled(true);
-            resultBmp = bitmapDAO.insert(new BitmapCapa(imgCapa.getDrawingCache()));
+        if(container !=null) {
+            obra.setContainer(container);
         }
 
-        obra.setIdBitmap((int)resultBmp);
-        /*if(TextViewContainer.getTag()!=null){
-            obra.setContainer(containerDAO.getById((Integer) TextViewContainer.getTag()));
-        }*/
-
+        long resultBmp = 0;
         if(obra.getIdObra()!=null){
+            if(obra.getCapaUrl() != null || obra.getIdBitmap() !=null) {
+                imgCapa.setDrawingCacheEnabled(true);
+                bitmapDAO.update(new BitmapCapa(imgCapa.getDrawingCache(), obra.getIdBitmap()));
+                imgCapa.destroyDrawingCache();
+            } else if(capaFoto != null && capaFoto.exists()) {
+                imgCapa.setDrawingCacheEnabled(true);
+                resultBmp = bitmapDAO.insert(new BitmapCapa(imgCapa.getDrawingCache()));
+                obra.setIdBitmap((int)resultBmp);
+                imgCapa.destroyDrawingCache();
+            }
+
             obraDao.update(obra);
             int childCount = layoutTags.getChildCount();
             for (int k = 0; k < tags.size(); k++) {
@@ -267,6 +259,13 @@ public class ObraDetalhadaEditActivity extends AppCompatActivity {
             }
 
         } else {
+            if(obra.getCapaUrl() != null || (capaFoto != null && capaFoto.exists())) {
+                imgCapa.setDrawingCacheEnabled(true);
+                resultBmp = bitmapDAO.insert(new BitmapCapa(imgCapa.getDrawingCache()));
+                obra.setIdBitmap((int)resultBmp);
+                imgCapa.destroyDrawingCache();
+            }
+
             long idObra=obraDao.insert(obra);
             int childCount = layoutTags.getChildCount();
             for (int i = 0; i < childCount; i++) {
@@ -281,9 +280,10 @@ public class ObraDetalhadaEditActivity extends AppCompatActivity {
     public void cancelarEditObra(View v){ finish();}
 
     public void updateFoto() {
-        if(capaFoto != null || capaFoto.exists()) {
+        if(capaFoto != null && capaFoto.exists()) {
             foto = ImageUtils.getBitmapReduzido(capaFoto.getPath(),this);
-            imgCapa.setImageBitmap(foto);
+            Picasso.with(this).load(capaFoto).into(imgCapa);
+            //imgCapa.setImageBitmap(foto);
         }
     }
 
@@ -406,10 +406,10 @@ public class ObraDetalhadaEditActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
 
-                Container container= (Container) adapterContainer.getItem(position);
+                container= (Container) adapterContainer.getItem(position);
 
-                TextViewContainer.setText(container.getNomeContainer());
-                TextViewContainer.setTag(container.getIdContainer());
+                TextViewContainer.setText(container.getNomeContainer()+" ("+container.getContainerTipos().getTipoNome()+")");
+                //TextViewContainer.setTag(container.getIdContainer());
             }
         };
     }
@@ -425,8 +425,8 @@ public class ObraDetalhadaEditActivity extends AppCompatActivity {
         emprestado.setChecked(obra.isEmprestado());
 
         if(obra.getContainer()!=null){
-            TextViewContainer.setText(obra.getContainer().getNomeContainer());
-            TextViewContainer.setTag(obra.getContainer().getIdContainer());
+            container = containerDAO.getById(obra.getContainer().getIdContainer());
+            TextViewContainer.setText(container.getNomeContainer()+" ("+container.getContainerTipos().getTipoNome()+")");
         }
     }
 

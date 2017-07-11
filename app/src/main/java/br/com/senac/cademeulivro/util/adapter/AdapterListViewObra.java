@@ -15,6 +15,7 @@ import java.util.List;
 import br.com.senac.cademeulivro.R;
 import br.com.senac.cademeulivro.dao.BitmapDAO;
 import br.com.senac.cademeulivro.helpers.DatabaseHelper;
+import br.com.senac.cademeulivro.model.BitmapCapa;
 import br.com.senac.cademeulivro.model.Obra;
 import br.com.senac.cademeulivro.util.classes.ImageUtils;
 
@@ -73,9 +74,10 @@ public class AdapterListViewObra extends BaseAdapter {
         editora.setText((item.getEditora()!=null && item.getEditora().length()>20) ? item.getEditora().substring(0,20)+"..." : item.getEditora());
         if(item.getCapaUrl() != null) {
             ImageUtils.loadCapa(item.getCapaUrl(),context,capa);
-        } else if (item.getIdBitmap() != null){
+        } else if (item.getIdBitmap() != null && item.getIdBitmap() > 0){
             BitmapDAO dao = new BitmapDAO(DatabaseHelper.newInstance(context));
-            capa.setImageBitmap(dao.getById(item.getIdBitmap()).getCapa());
+            BitmapCapa c = dao.getById(item.getIdBitmap());
+            capa.setImageBitmap(c.getCapa());
         } else {
             capa.setImageResource(R.drawable.placeholder);
         }
